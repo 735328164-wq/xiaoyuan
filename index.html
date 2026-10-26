@@ -75,6 +75,17 @@ justify-content:center;font-size:14px;font-weight:600;background:var(--busy);col
 </div>
 
 <script>
+/* ============================================================
+   数据来源优先级：
+   1) 腾讯云广州函数（国内节点，能连上樱花充电接口）→ 主力
+   2) 本项目自带的 /api/status（Vercel 香港节点，会被对方静默丢弃）→ 兜底
+   ============================================================ */
+const API_CANDIDATES = [
+  "https://1517412699-356gtpqv4h.ap-guangzhou.tencentscf.com/api",
+  "/api/status",
+];
+/* ============================================================ */
+
 const REFRESH = 12;
 let left = REFRESH, running = true;
 const $ = (id) => document.getElementById(id);
@@ -121,15 +132,20 @@ function render(d) {
 }
 
 async function load(manual) {
-  try {
-    const r = await fetch('/api/status?t=' + Date.now(), { cache: 'no-store' });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    render(await r.json());
-    left = REFRESH;
-    if (manual) $('sub').textContent += ' · 已手动刷新';
-  } catch (e) {
-    $('sub').textContent = '读取失败：' + e.message + '（下拉或点刷新重试）';
+  let lastErr = '无可用后端';
+  for (const base of API_CANDIDATES) {
+    try {
+      const r = await fetch(base + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
+      if (!d || typeof d.free_total === 'undefined') throw new Error('返回格式不对');
+      render(d);
+      left = REFRESH;
+      if (manual) $('sub').textContent += ' · 已手动刷新';
+      return;
+    } catch (e) { lastErr = e.message; }
   }
+  $('sub').textContent = '读取失败：' + lastErr + '（点刷新重试）';
 }
 
 function tick() {
