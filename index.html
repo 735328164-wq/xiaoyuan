@@ -131,21 +131,62 @@ function render(d) {
   $('list').innerHTML = h;
 }
 
-async function load(manual) {
-  let lastErr = '无可用后端';
-  for (const base of API_CANDIDATES) {
-    try {
-      const r = await fetch(base + '?t=' + Date.now(), { cache: 'no-store' });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const d = await r.json();
-      if (!d || typeof d.free_total === 'undefined') throw new Error('返回格式不对');
-      render(d);
-      left = REFRESH;
-      if (manual) $('sub').textContent += ' · 已手动刷新';
-      return;
-    } catch (e) { lastErr = e.message; }
+/* fetch 版：拿 JSON（带 6 秒硬超时，防止挂死不返回） */
+async function fetchJson(base) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), 6000);
+  try {
+    const r = await fetch(base + '?t=' + Date.now(), { cache: 'no-store', signal: ac.signal });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    if (!d || typeof d.free_total === 'undefined') throw new Error('返回格式不对');
+    return d;
+  } finally {
+    clearTimeout(t);
   }
-  $('sub').textContent = '读取失败：' + lastErr + '（点刷新重试）';
+}
+
+/* JSONP 版：用 <script> 加载，不受 CORS / Content-Disposition 影响 */
+function jsonpJson(base, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const cb = 'cb' + Date.now() + Math.floor(Math.random() * 1000);
+    const s = document.createElement('script');
+    let done = false;
+    const timer = setTimeout(() => { cleanup(); reject(new Error('JSONP超时')); }, timeoutMs);
+    function cleanup() {
+      clearTimeout(timer);
+      try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+      if (s.parentNode) s.parentNode.removeChild(s);
+    }
+    window[cb] = (d) => { done = true; cleanup(); resolve(d); };
+    s.onerror = () => { if (!done) { cleanup(); reject(new Error('JSONP加载失败')); } };
+    s.src = base + (base.indexOf('?') >= 0 ? '&' : '?') +
+            'callback=' + cb + '&t=' + Date.now();
+    document.head.appendChild(s);
+  });
+}
+
+async function load(manual) {
+  const errs = [];
+  for (const base of API_CANDIDATES) {
+    const short = base.replace(/^https?:\/\//, '').slice(0, 30);
+    for (const run of [
+      () => fetchJson(base),
+      () => jsonpJson(base, 8000),
+    ]) {
+      try {
+        const d = await run();
+        render(d);
+        left = REFRESH;
+        if (manual) $('sub').textContent += ' · 已手动刷新';
+        return;
+      } catch (e) {
+        errs.push(short + ' → ' + (e && e.message ? e.message : e));
+      }
+    }
+  }
+  $('sub').innerHTML = '❌ 全部后端失败：<br><span style="color:#f87171">' +
+    errs.join('<br>') + '</span>';
 }
 
 function tick() {
