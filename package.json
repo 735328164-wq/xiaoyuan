@@ -1,0 +1,9 @@
+{
+  "name": "cherry-charger-board",
+  "version": "1.0.0",
+  "private": true,
+  "description": "佛山科学技术学院充电站 · 空闲充电桩实时看板（Vercel 部署版）",
+  "scripts": {
+    "dev": "vercel dev"
+  }
+}

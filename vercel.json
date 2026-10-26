@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["hkg1"],
+  "functions": {
+    "api/status.js": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/status",
+      "headers": [
+        { "key": "Cache-Control", "value": "s-maxage=10, stale-while-revalidate=30" }
+      ]
+    }
+  ]
+}
