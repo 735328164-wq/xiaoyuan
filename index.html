@@ -130,6 +130,7 @@ const LS_UID = 'cherry_uid', LS_NAME = 'cherry_name', LS_KEY = 'cherry_admin_key
 let left = REFRESH, running = true, timer = null;
 const $ = (id) => document.getElementById(id);
 const show = (id, on) => { $(id).style.display = on ? '' : 'none'; };
+function startTimer() { if (!timer) timer = setInterval(tick, 1000); }
 
 /* --------- JSONP 请求（绕开 CORS 与 attachment） --------- */
 let seq = 0;
@@ -164,6 +165,7 @@ async function doRegister() {
     localStorage.setItem(LS_UID, d.id);
     localStorage.setItem(LS_NAME, d.name);
     show('gate', false); show('app', true);
+    startTimer();
     await load();
   } catch (e) {
     $('gateErr').textContent = '❌ ' + e.message;
@@ -310,7 +312,7 @@ async function setBlock(uid, blocked) {
   if (!uid) { showGate(); return; }
   show('app', true);
   load();
-  timer = setInterval(tick, 1000);
+  startTimer();
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 })();
 </script>
