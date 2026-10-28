@@ -105,7 +105,7 @@ td.name{font-weight:600}
     绿色＝空闲可用｜灰色＝已占用。数据每 <span id="ttl">12</span> 秒自动刷新，失联/异常的桩已自动隐藏。<br>
     <span style="color:#5b6478">数据来自樱花充电小程序接口，仅供查位参考，能否充上以小程序为准。</span>
   </div>
-  <div class="utag" id="utag"></div>
+  <div class="utag" id="utag" style="display:none"></div>
 </div>
 
 <!-- ============ 后台 ============ -->
@@ -189,7 +189,6 @@ function render(d) {
   $('cnt').textContent = d.free_total;
   $('sub').textContent = '更新于 ' + new Date(d.ts * 1000).toLocaleTimeString('zh-CN');
   $('hero').className = d.free_total > 0 ? 'hero' : 'hero nofree';
-  $('utag').textContent = d.me ? ('当前用户：' + d.me) : '';
 
   const good = [];
   d.zones.forEach((z) => z.piles.forEach((p) => { if (p.state === 'free') good.push(p); }));
