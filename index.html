@@ -9,7 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
 <style>
 :root{--bg:#0f1115;--card:#1a1e26;--line:#2a2f3a;--dim:#8b93a7;
---free:#22c55e;--freebg:#0d3320;--busy:#3a4150;--warn:#f59e0b;--txt:#e8ecf3}
+--free:#22c55e;--freebg:#0d3320;--busy:#3a4150;--warn:#f59e0b;--txt:#e8ecf3;--blue:#3b82f6}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--txt);
 font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
@@ -26,11 +26,11 @@ border-radius:14px;padding:16px;margin-bottom:14px}
 .hero.nofree .hint{color:#e5c07b}
 .bar{display:flex;gap:8px;margin-bottom:14px}
 button{flex:1;background:var(--card);color:var(--txt);border:1px solid var(--line);
-border-radius:10px;padding:11px;font-size:14px}
+border-radius:10px;padding:11px;font-size:14px;cursor:pointer}
 button:active{background:#252b36}
 .zhead{display:flex;justify-content:space-between;align-items:baseline;
 margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
-.zname{font-size:15px;font-weight:600;letter-spacing:.5px}
+.zname{font-size:14px;font-weight:600;letter-spacing:.3px}
 .zfree{font-size:12px;color:var(--dim)}
 .zfree b{color:var(--free)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
@@ -46,56 +46,148 @@ padding:12px;margin-bottom:9px}
 justify-content:center;font-size:14px;font-weight:600;background:var(--busy);color:#6f798d}
 .p.on{background:var(--free);color:#05240f}
 .gray{color:var(--dim);font-size:12px}
-.skel{color:var(--dim);font-size:13px;padding:8px 0}
+.center{min-height:70vh;display:flex;flex-direction:column;justify-content:center;
+align-items:center;text-align:center;padding:20px}
+.center h2{font-size:20px;margin:0 0 8px}
+.center p{color:var(--dim);font-size:13px;margin:0 0 22px;line-height:1.7}
+input{width:100%;max-width:300px;background:var(--card);border:1px solid var(--line);
+border-radius:10px;padding:14px;font-size:16px;color:var(--txt);text-align:center;outline:none}
+input:focus{border-color:var(--free)}
+.btn-main{width:100%;max-width:300px;margin-top:12px;background:var(--free);color:#05240f;
+border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:600}
+.btn-main:disabled{opacity:.5}
+.utag{font-size:11px;color:var(--dim);margin-top:10px}
+.err{color:#f87171;font-size:13px;margin-top:12px;max-width:320px;word-break:break-all}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--dim);font-weight:400;font-size:12px}
+td.name{font-weight:600}
+.on-badge{color:var(--free)}
+.off-badge{color:#f87171}
+.mini{padding:6px 10px;font-size:12px;border-radius:8px;flex:0 0 auto}
+.wide{max-width:100%}
 </style>
 </head>
 <body>
-<h1 id="st">空闲充电桩</h1>
-<div class="sub" id="sub">加载中…</div>
 
-<div class="hero" id="hero">
-  <div class="n"><span id="cnt">–</span><small id="cntu">个空闲口</small></div>
-  <div class="hint" id="best">正在扫描…</div>
+<!-- ============ 注册门 ============ -->
+<div id="gate" class="center" style="display:none">
+  <h2>👋 先登记一下</h2>
+  <p>填写你的姓名后才能查看空闲充电桩<br>方便管理员统计谁在使用</p>
+  <input id="nameInput" placeholder="请输入姓名" maxlength="20" autocomplete="name">
+  <button class="btn-main" id="regBtn" onclick="doRegister()">进入看板</button>
+  <div class="err" id="gateErr"></div>
 </div>
 
-<div class="bar">
-  <button onclick="load(true)">🔄 立即刷新</button>
-  <button id="auto" onclick="toggle()">⏸ 暂停自动</button>
+<!-- ============ 被下线 ============ -->
+<div id="blocked" class="center" style="display:none">
+  <h2>🚫 你已被管理员下线</h2>
+  <p id="blockedMsg">如需恢复使用，请联系管理员。</p>
 </div>
 
-<div id="list"><div class="skel">正在读取各桩状态…</div></div>
+<!-- ============ 看板 ============ -->
+<div id="app" style="display:none">
+  <h1 id="st">空闲充电桩</h1>
+  <div class="sub" id="sub">加载中…</div>
+  <div class="hero" id="hero">
+    <div class="n"><span id="cnt">–</span><small>个空闲口</small></div>
+    <div class="hint" id="best">正在扫描…</div>
+  </div>
+  <div class="bar">
+    <button onclick="load(true)">🔄 立即刷新</button>
+    <button id="auto" onclick="toggle()">⏸ 暂停自动</button>
+  </div>
+  <div id="list"></div>
+  <div class="zhead"><span class="zname">计费</span></div>
+  <div class="gray" id="fee"></div>
+  <div class="zhead"><span class="zname">说明</span></div>
+  <div class="gray">
+    绿色＝空闲可用｜灰色＝已占用。数据每 <span id="ttl">12</span> 秒自动刷新，失联/异常的桩已自动隐藏。<br>
+    <span style="color:#5b6478">数据来自樱花充电小程序接口，仅供查位参考，能否充上以小程序为准。</span>
+  </div>
+  <div class="utag" id="utag"></div>
+</div>
 
-<div class="zhead"><span class="zname">计费</span></div>
-<div class="gray" id="fee"></div>
-<div class="zhead"><span class="zname">说明</span></div>
-<div class="gray">
-绿色＝空闲可用（去小程序选这个口）｜灰色＝已占用。<br>
-数据每 <span id="ttl">12</span> 秒自动刷新，失联/异常的桩已自动隐藏。<br>
-<span style="color:#5b6478">数据来自樱花充电小程序接口，仅供查位参考，能否充上以小程序为准。</span>
+<!-- ============ 后台 ============ -->
+<div id="admin" style="display:none">
+  <h1>👥 注册用户管理</h1>
+  <div class="sub" id="adminSub">输入管理员口令</div>
+  <div class="bar">
+    <input id="keyInput" placeholder="管理员口令" style="text-align:left;max-width:none">
+    <button class="mini" onclick="adminLoad()">进入</button>
+  </div>
+  <div id="adminList"></div>
+  <div class="gray" id="adminFoot" style="margin-top:14px"></div>
 </div>
 
 <script>
-/* ============================================================
-   数据来源优先级：
-   1) 腾讯云广州函数（国内节点，能连上樱花充电接口）→ 主力
-   2) 本项目自带的 /api/status（Vercel 香港节点，会被对方静默丢弃）→ 兜底
-   ============================================================ */
-const API_CANDIDATES = [
-  "https://1517412699-356gtpqv4h.ap-guangzhou.tencentscf.com/api",
-  "/api/status",
-];
-/* ============================================================ */
-
+/* ================== 配置 ================== */
+const API = "https://1517412699-356gtpqv4h.ap-guangzhou.tencentscf.com/api";
 const REFRESH = 12;
-let left = REFRESH, running = true;
-const $ = (id) => document.getElementById(id);
+const LS_UID = 'cherry_uid', LS_NAME = 'cherry_name', LS_KEY = 'cherry_admin_key';
+/* ========================================== */
 
+let left = REFRESH, running = true, timer = null;
+const $ = (id) => document.getElementById(id);
+const show = (id, on) => { $(id).style.display = on ? '' : 'none'; };
+
+/* --------- JSONP 请求（绕开 CORS 与 attachment） --------- */
+let seq = 0;
+function api(params, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const cb = 'cbk' + (++seq) + Date.now();
+    const s = document.createElement('script');
+    let done = false;
+    const qs = Object.keys(params).map((k) => k + '=' + encodeURIComponent(params[k])).join('&');
+    const t = setTimeout(() => { cleanup(); reject(new Error('请求超时')); }, timeoutMs || 12000);
+    function cleanup() {
+      clearTimeout(t);
+      try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+      if (s.parentNode) s.parentNode.removeChild(s);
+    }
+    window[cb] = (d) => { done = true; cleanup(); resolve(d); };
+    s.onerror = () => { if (!done) { cleanup(); reject(new Error('网络错误')); } };
+    s.src = API + '?' + qs + '&callback=' + cb + '&_=' + Date.now();
+    document.head.appendChild(s);
+  });
+}
+
+/* --------- 注册 --------- */
+async function doRegister() {
+  const v = ($('nameInput').value || '').trim();
+  if (!v) { $('gateErr').textContent = '请填写姓名'; return; }
+  $('regBtn').disabled = true;
+  $('gateErr').textContent = '';
+  try {
+    const d = await api({ action: 'register', name: v });
+    if (!d.ok) throw new Error(d.msg || '注册失败');
+    localStorage.setItem(LS_UID, d.id);
+    localStorage.setItem(LS_NAME, d.name);
+    show('gate', false); show('app', true);
+    await load();
+  } catch (e) {
+    $('gateErr').textContent = '❌ ' + e.message;
+  } finally {
+    $('regBtn').disabled = false;
+  }
+}
+function showGate() {
+  show('app', false); show('blocked', false); show('gate', true);
+  $('nameInput').value = localStorage.getItem(LS_NAME) || '';
+}
+function showBlocked(name) {
+  show('app', false); show('gate', false); show('blocked', true);
+  $('blockedMsg').textContent = (name || '你') + ' 的使用权限已被管理员关闭，如需恢复请联系管理员。';
+}
+
+/* --------- 渲染看板 --------- */
 function render(d) {
   $('st').textContent = d.station;
   $('fee').textContent = d.fee;
   $('cnt').textContent = d.free_total;
   $('sub').textContent = '更新于 ' + new Date(d.ts * 1000).toLocaleTimeString('zh-CN');
   $('hero').className = d.free_total > 0 ? 'hero' : 'hero nofree';
+  $('utag').textContent = d.me ? ('当前用户：' + d.me) : '';
 
   const good = [];
   d.zones.forEach((z) => z.piles.forEach((p) => { if (p.state === 'free') good.push(p); }));
@@ -103,14 +195,14 @@ function render(d) {
     $('best').innerHTML = '👉 直接去：' +
       good.map((p) => '<b>' + p.sn + '</b> 口 ' + p.free.join('/')).join('　');
   } else {
-    $('best').textContent = '当前没有空闲口，稍后再看 / 去别的区碰碰运气';
+    $('best').textContent = '当前没有空闲口，稍后再看';
   }
 
   let h = '';
   for (const z of d.zones) {
     h += '<div class="zhead"><span class="zname">' + z.name +
          '</span><span class="zfree">空闲 <b>' + z.free_total + '</b> 口</span></div>';
-    if (!z.piles.length) { h += '<div class="gray" style="padding:6px 0">该区域暂无可显示的桩</div>'; continue; }
+    if (!z.piles.length) { h += '<div class="gray" style="padding:6px 0">暂无可显示的桩</div>'; continue; }
     for (const p of z.piles) {
       const isFree = p.state === 'free';
       h += '<div class="card ' + p.state + '"><div class="row"><span class="sn">' + p.sn +
@@ -131,62 +223,20 @@ function render(d) {
   $('list').innerHTML = h;
 }
 
-/* fetch 版：拿 JSON（带 6 秒硬超时，防止挂死不返回） */
-async function fetchJson(base) {
-  const ac = new AbortController();
-  const t = setTimeout(() => ac.abort(), 6000);
-  try {
-    const r = await fetch(base + '?t=' + Date.now(), { cache: 'no-store', signal: ac.signal });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const d = await r.json();
-    if (!d || typeof d.free_total === 'undefined') throw new Error('返回格式不对');
-    return d;
-  } finally {
-    clearTimeout(t);
-  }
-}
-
-/* JSONP 版：用 <script> 加载，不受 CORS / Content-Disposition 影响 */
-function jsonpJson(base, timeoutMs) {
-  return new Promise((resolve, reject) => {
-    const cb = 'cb' + Date.now() + Math.floor(Math.random() * 1000);
-    const s = document.createElement('script');
-    let done = false;
-    const timer = setTimeout(() => { cleanup(); reject(new Error('JSONP超时')); }, timeoutMs);
-    function cleanup() {
-      clearTimeout(timer);
-      try { delete window[cb]; } catch (e) { window[cb] = undefined; }
-      if (s.parentNode) s.parentNode.removeChild(s);
-    }
-    window[cb] = (d) => { done = true; cleanup(); resolve(d); };
-    s.onerror = () => { if (!done) { cleanup(); reject(new Error('JSONP加载失败')); } };
-    s.src = base + (base.indexOf('?') >= 0 ? '&' : '?') +
-            'callback=' + cb + '&t=' + Date.now();
-    document.head.appendChild(s);
-  });
-}
-
 async function load(manual) {
-  const errs = [];
-  for (const base of API_CANDIDATES) {
-    const short = base.replace(/^https?:\/\//, '').slice(0, 30);
-    for (const run of [
-      () => fetchJson(base),
-      () => jsonpJson(base, 8000),
-    ]) {
-      try {
-        const d = await run();
-        render(d);
-        left = REFRESH;
-        if (manual) $('sub').textContent += ' · 已手动刷新';
-        return;
-      } catch (e) {
-        errs.push(short + ' → ' + (e && e.message ? e.message : e));
-      }
-    }
+  const uid = localStorage.getItem(LS_UID);
+  if (!uid) return showGate();
+  try {
+    const d = await api({ action: 'data', uid: uid }, 20000);
+    if (d.needReg) { localStorage.removeItem(LS_UID); return showGate(); }
+    if (d.blocked) return showBlocked(d.name);
+    if (typeof d.free_total === 'undefined') throw new Error(d.msg || '数据格式不对');
+    render(d);
+    left = REFRESH;
+    if (manual) $('sub').textContent += ' · 已手动刷新';
+  } catch (e) {
+    $('sub').innerHTML = '<span style="color:#f87171">读取失败：' + e.message + '</span>';
   }
-  $('sub').innerHTML = '❌ 全部后端失败：<br><span style="color:#f87171">' +
-    errs.join('<br>') + '</span>';
 }
 
 function tick() {
@@ -197,9 +247,72 @@ function tick() {
 }
 function toggle() { running = !running; if (running) left = REFRESH; tick(); }
 
-document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
-load();
-setInterval(tick, 1000);
+/* ================== 后台 ================== */
+async function adminLoad() {
+  let key = $('keyInput').value.trim();
+  if (!key) key = localStorage.getItem(LS_KEY) || '';
+  if (!key) { $('adminSub').textContent = '请输入管理员口令'; return; }
+  localStorage.setItem(LS_KEY, key);
+  $('adminSub').textContent = '加载中…';
+  try {
+    const d = await api({ action: 'admin', key: key });
+    if (!d.ok) { $('adminSub').textContent = '❌ ' + (d.msg || '口令不对'); return; }
+    renderAdmin(d);
+  } catch (e) {
+    $('adminSub').textContent = '❌ ' + e.message;
+  }
+}
+
+function fmt(ts) {
+  if (!ts) return '-';
+  const d = new Date(ts);
+  const p = (n) => (n < 10 ? '0' + n : n);
+  return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+
+function renderAdmin(d) {
+  $('adminSub').textContent = '共 ' + d.total + ' 人注册';
+  if (!d.users.length) { $('adminList').innerHTML = '<div class="gray" style="padding:20px 0">还没有人注册</div>'; return; }
+  let h = '<table><tr><th>姓名</th><th>注册</th><th>最近访问</th><th>状态</th><th></th></tr>';
+  for (const u of d.users) {
+    h += '<tr><td class="name">' + u.name + '</td>' +
+         '<td class="gray">' + fmt(u.created) + '</td>' +
+         '<td class="gray">' + fmt(u.lastSeen) + '</td>' +
+         '<td class="' + (u.blocked ? 'off-badge' : 'on-badge') + '">' +
+         (u.blocked ? '已下线' : '正常') + '</td>' +
+         '<td><button class="mini" onclick="setBlock(\'' + u.id + '\',' + (u.blocked ? 0 : 1) + ')">' +
+         (u.blocked ? '恢复' : '下线') + '</button></td></tr>';
+  }
+  h += '</table>';
+  $('adminList').innerHTML = h;
+  $('adminFoot').textContent = '下线后该用户打开页面会看到「已被管理员下线」，数据不再返回。';
+}
+
+async function setBlock(uid, blocked) {
+  const key = localStorage.getItem(LS_KEY);
+  try {
+    const d = await api({ action: 'block', key: key, uid: uid, blocked: blocked });
+    if (!d.ok) { alert(d.msg || '操作失败'); return; }
+    adminLoad();
+  } catch (e) { alert('操作失败：' + e.message); }
+}
+
+/* ================== 启动 ================== */
+(function boot() {
+  if (/[?&]admin=1/.test(location.search)) {
+    show('app', false); show('gate', false); show('blocked', false); show('admin', true);
+    document.title = '用户管理';
+    if (localStorage.getItem(LS_KEY)) adminLoad();
+    return;
+  }
+  let running_ = true;
+  const uid = localStorage.getItem(LS_UID);
+  if (!uid) { showGate(); return; }
+  show('app', true);
+  load();
+  timer = setInterval(tick, 1000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+})();
 </script>
 </body>
 </html>
