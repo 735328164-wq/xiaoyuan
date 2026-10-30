@@ -38,6 +38,9 @@ padding:12px;margin-bottom:9px}
 .card.free{border-color:#1f4d33}
 .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
 .sn{font-family:ui-monospace,Menlo,monospace;font-size:15px;letter-spacing:.3px}
+.pname{display:inline-flex;align-items:baseline;gap:8px;min-width:0}
+.alias{font-size:14px;font-weight:700;color:#9fe3b8;letter-spacing:.5px}
+.num{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--dim);letter-spacing:.3px}
 .sub2{font-size:11px;color:var(--dim);margin:-4px 0 9px;letter-spacing:.3px}
 .znote{font-size:11px;color:#5b6478;margin:-2px 0 8px}
 .tag{font-size:11px;padding:3px 8px;border-radius:999px;white-space:nowrap}
@@ -209,14 +212,11 @@ function render(d) {
     if (!z.piles.length) { h += '<div class="gray" style="padding:6px 0">暂无可显示的桩</div>'; continue; }
     for (const p of z.piles) {
       const isFree = p.state === 'free';
-      const label = p.alias || String(p.sn);
-      const subline = p.alias
-        ? (p.sn + (p.zoneNote ? ' · ' + p.zoneNote : ''))
-        : '';
-      h += '<div class="card ' + p.state + '"><div class="row"><span class="sn">' + label +
+      const nameHtml = (p.alias ? '<span class="alias">' + p.alias + '</span>' : '') +
+                       '<span class="num">' + p.sn + '</span>';
+      h += '<div class="card ' + p.state + '"><div class="row"><span class="pname">' + nameHtml +
            '</span><span class="tag ' + (isFree ? 't-free' : 't-full') + '">' +
            (isFree ? '有空位' : '全满') + '</span></div>' +
-           (subline ? '<div class="sub2">' + subline + '</div>' : '') +
            '<div class="plugs">';
       const fs = new Set(p.free);
       for (let i = 1; i <= (p.total || 10); i++)
