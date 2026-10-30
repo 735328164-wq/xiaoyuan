@@ -157,8 +157,9 @@ max-width:360px;padding:18px;text-align:center;max-height:92vh;overflow:auto}
 .modal .mno{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--dim)}
 .modal .mamt{font-size:30px;font-weight:700;color:var(--free);margin:10px 0 4px}
 .modal .qrbox{background:#fff;border-radius:14px;padding:10px;margin:12px auto;width:100%;
-max-width:260px;box-sizing:border-box}
-.modal .qrbox img{width:100%;height:auto;display:block;image-rendering:auto}
+max-width:290px;box-sizing:border-box}
+.modal .qrbox img{width:100%;height:auto;display:block;image-rendering:-webkit-optimize-contrast;
+image-rendering:high-quality}
 .modal .tip{font-size:12px;color:var(--warn);margin-bottom:12px;line-height:1.6}
 .modal .btn{margin-top:8px}
 .modal .btn.line{background:transparent;border:1px solid var(--line);color:var(--dim)}
@@ -274,7 +275,10 @@ background:#252b36;border:1px solid var(--line);color:var(--txt)}
     <div class="mno" id="qrNo"></div>
     <div class="mamt" id="qrAmt">¥0</div>
     <div class="qrbox"><img id="qrImg" alt="收款码" src=""></div>
-    <div class="tip">请核对金额与订单号后再付款<br>付款完成后点下方「我已付款」</div>
+    <div class="tip">⚠️ 微信/支付宝无法扫描本机屏幕上的码<br>
+      正确做法：<b>长按图片保存到相册</b> → 打开微信「扫一扫」→ 右上角「相册」→ 选这张图<br>
+      或者用另一台手机扫这个码。</div>
+    <div class="tip" style="color:#8b93a7;margin-top:-6px">请核对金额 <b id="qrAmt2">¥0</b> 与订单号后再付款</div>
     <button class="btn" id="paidBtn" onclick="confirmPaid()">我已付款</button>
     <button class="btn line" onclick="closeQr()">关闭</button>
   </div>
@@ -657,6 +661,7 @@ function choosePay(m) {
   $('qrTitle').textContent = (m === 'wechat' ? '微信' : '支付宝') + '扫码支付';
   $('qrNo').textContent = '订单号 ' + payOrder.no;
   $('qrAmt').textContent = '¥' + payOrder.total;
+  $('qrAmt2').textContent = '¥' + payOrder.total;
   $('qrImg').src = API + '?action=qrimg&type=' + m + '&_=' + Date.now();
   hide('qrMask', true);
 }
