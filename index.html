@@ -62,6 +62,15 @@ input:focus{border-color:var(--free)}
 border:none;border-radius:10px;padding:14px;font-size:16px;font-weight:600}
 .btn-main:disabled{opacity:.5}
 .utag{font-size:11px;color:var(--dim);margin-top:10px}
+.biz{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+border-radius:14px;padding:13px 14px;margin-bottom:14px;text-decoration:none;color:var(--txt)}
+.biz:active{background:#252b36}
+.bizIcon{font-size:22px;width:44px;height:44px;flex:0 0 auto;display:flex;align-items:center;
+justify-content:center;background:linear-gradient(135deg,#12202e,#0d3320);border-radius:12px;border:1px solid #1f4d33}
+.bizTxt{flex:1;display:flex;flex-direction:column}
+.bizTxt b{font-size:15px}
+.bizTxt small{color:var(--dim);font-size:12px;margin-top:2px}
+.bizArrow{color:#5b6478;font-size:20px;line-height:1}
 .err{color:#f87171;font-size:13px;margin-top:12px;max-width:320px;word-break:break-all}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left}
@@ -98,6 +107,13 @@ td.name{font-weight:600}
     <div class="n"><span id="cnt">–</span><small>个空闲口</small></div>
     <div class="hint" id="best">正在扫描…</div>
   </div>
+
+  <a class="biz" href="express.html">
+    <span class="bizIcon">📦</span>
+    <span class="bizTxt"><b>快递代拿</b><small>1-2元/件，送货上门</small></span>
+    <span class="bizArrow">›</span>
+  </a>
+
   <div class="bar">
     <button onclick="load(true)">🔄 立即刷新</button>
     <button id="auto" onclick="toggle()">⏸ 暂停自动</button>
