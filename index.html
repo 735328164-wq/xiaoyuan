@@ -38,6 +38,8 @@ padding:12px;margin-bottom:9px}
 .card.free{border-color:#1f4d33}
 .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
 .sn{font-family:ui-monospace,Menlo,monospace;font-size:15px;letter-spacing:.3px}
+.sub2{font-size:11px;color:var(--dim);margin:-4px 0 9px;letter-spacing:.3px}
+.znote{font-size:11px;color:#5b6478;margin:-2px 0 8px}
 .tag{font-size:11px;padding:3px 8px;border-radius:999px;white-space:nowrap}
 .t-free{background:var(--freebg);color:var(--free)}
 .t-full{background:#262b35;color:var(--dim)}
@@ -194,7 +196,7 @@ function render(d) {
   d.zones.forEach((z) => z.piles.forEach((p) => { if (p.state === 'free') good.push(p); }));
   if (good.length) {
     $('best').innerHTML = '👉 直接去：' +
-      good.map((p) => '<b>' + p.sn + '</b> 口 ' + p.free.join('/')).join('　');
+      good.map((p) => '<b>' + (p.alias || p.sn) + '</b> 口 ' + p.free.join('/')).join('　');
   } else {
     $('best').textContent = '当前没有空闲口，稍后再看';
   }
@@ -203,12 +205,19 @@ function render(d) {
   for (const z of d.zones) {
     h += '<div class="zhead"><span class="zname">' + z.name +
          '</span><span class="zfree">空闲 <b>' + z.free_total + '</b> 口</span></div>';
+    if (z.note) h += '<div class="znote">' + z.note + '</div>';
     if (!z.piles.length) { h += '<div class="gray" style="padding:6px 0">暂无可显示的桩</div>'; continue; }
     for (const p of z.piles) {
       const isFree = p.state === 'free';
-      h += '<div class="card ' + p.state + '"><div class="row"><span class="sn">' + p.sn +
+      const label = p.alias || String(p.sn);
+      const subline = p.alias
+        ? (p.sn + (p.zoneNote ? ' · ' + p.zoneNote : ''))
+        : '';
+      h += '<div class="card ' + p.state + '"><div class="row"><span class="sn">' + label +
            '</span><span class="tag ' + (isFree ? 't-free' : 't-full') + '">' +
-           (isFree ? '有空位' : '全满') + '</span></div><div class="plugs">';
+           (isFree ? '有空位' : '全满') + '</span></div>' +
+           (subline ? '<div class="sub2">' + subline + '</div>' : '') +
+           '<div class="plugs">';
       const fs = new Set(p.free);
       for (let i = 1; i <= (p.total || 10); i++)
         h += '<div class="p' + (fs.has(i) ? ' on' : '') + '">' + i + '</div>';
