@@ -133,6 +133,54 @@ background:#252b36;border:1px solid var(--line);color:var(--txt)}
 .bigTag{font-size:10px;padding:1px 6px;border-radius:999px;background:#3a2c0a;color:var(--warn);margin-left:5px}
 .filters{display:flex;gap:6px;margin-bottom:12px}
 .filters input,.filters select{padding:9px;font-size:13px}
+
+/* ---- 支付 ---- */
+.payopt{display:flex;gap:10px;margin:14px 0}
+.payopt .pc{flex:1;background:var(--card);border:2px solid var(--line);border-radius:14px;
+padding:16px 12px;text-align:center;color:var(--dim)}
+.payopt .pc .ico{font-size:26px;display:block;margin-bottom:6px}
+.payopt .pc b{font-size:14px;color:var(--txt)}
+.payopt .pc.on{border-color:var(--free);background:#0d3320;color:#9fe3b8}
+.payopt .pc.on b{color:#c9f5d9}
+.payAmount{text-align:center;margin:6px 0 2px}
+.payAmount .big{font-size:34px;font-weight:700;color:var(--free)}
+.payAmount .no{font-size:12px;color:var(--dim);margin-top:4px}
+.payNote{background:#3a2c0a;border:1px solid #5c4410;border-radius:10px;padding:10px 12px;
+font-size:12px;color:#f5c46b;margin:14px 0;line-height:1.6}
+
+/* 弹窗 */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:120;display:flex;
+align-items:center;justify-content:center;padding:18px}
+.modal{background:#151920;border:1px solid var(--line);border-radius:18px;width:100%;
+max-width:360px;padding:18px;text-align:center;max-height:92vh;overflow:auto}
+.modal h3{margin:0 0 4px;font-size:17px}
+.modal .mno{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--dim)}
+.modal .mamt{font-size:30px;font-weight:700;color:var(--free);margin:10px 0 4px}
+.modal .qrbox{background:#fff;border-radius:14px;padding:10px;margin:12px auto;width:100%;
+max-width:260px;box-sizing:border-box}
+.modal .qrbox img{width:100%;height:auto;display:block;image-rendering:auto}
+.modal .tip{font-size:12px;color:var(--warn);margin-bottom:12px;line-height:1.6}
+.modal .btn{margin-top:8px}
+.modal .btn.line{background:transparent;border:1px solid var(--line);color:var(--dim)}
+.payTag{font-size:11px;padding:2px 8px;border-radius:999px;margin-left:6px}
+.p0{background:#262b35;color:var(--dim)}
+.p1{background:#3a2c0a;color:var(--warn)}
+.p2{background:#0d3320;color:var(--free)}
+.p3{background:#3a1113;color:#f87171}
+.p4{background:#241a3d;color:var(--purple)}
+.payRow{display:flex;gap:8px;align-items:center;padding:11px 0;border-bottom:1px dashed #262b35;font-size:13px}
+.payRow .pl{flex:1;min-width:0}
+.payRow .pl b{display:block;font-size:13px;font-weight:500}
+.payRow .pl small{color:var(--dim);font-size:11px;font-family:ui-monospace,Menlo,monospace}
+.payRow img.shot{width:40px;height:40px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.payRow .acts{display:flex;gap:5px;flex-wrap:wrap;margin:0}
+.qrset{display:flex;gap:10px;margin-bottom:12px}
+.qrset .one{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.qrset .one img{width:100%;max-width:130px;border-radius:8px;background:#fff;padding:5px;display:block;margin:8px auto}
+.qrset .one small{color:var(--dim);font-size:11px;display:block;margin-bottom:6px}
+.qrset .one button{width:100%;padding:7px;font-size:12px;border-radius:8px;margin-top:6px;
+background:#252b36;border:1px solid var(--line);color:var(--txt)}
+.qrset .one button.off{background:#3a1113;border-color:#5c1a1d;color:#f87171}
 </style>
 </head>
 <body>
@@ -213,6 +261,25 @@ background:#252b36;border:1px solid var(--line);color:var(--txt)}
   <div id="detailBody"></div>
 </div>
 
+<!-- 支付页 -->
+<div id="pay" class="hide" style="margin-top:6px">
+  <button class="btn ghost" onclick="closePay()">← 返回订单</button>
+  <div id="payBody"></div>
+</div>
+
+<!-- 收款码弹窗 -->
+<div id="qrMask" class="mask hide">
+  <div class="modal">
+    <h3 id="qrTitle">扫码支付</h3>
+    <div class="mno" id="qrNo"></div>
+    <div class="mamt" id="qrAmt">¥0</div>
+    <div class="qrbox"><img id="qrImg" alt="收款码" src=""></div>
+    <div class="tip">请核对金额与订单号后再付款<br>付款完成后点下方「我已付款」</div>
+    <button class="btn" id="paidBtn" onclick="confirmPaid()">我已付款</button>
+    <button class="btn line" onclick="closeQr()">关闭</button>
+  </div>
+</div>
+
 <div id="admin" class="hide">
   <div class="nav"><a href="index.html">🔌 充电桩</a><span class="on">📦 快递后台</span></div>
   <h1>快递代拿 · 管理</h1>
@@ -240,10 +307,12 @@ background:#252b36;border:1px solid var(--line);color:var(--txt)}
   <div class="tabs">
     <button id="a1" class="on" onclick="admTab(1)">按快递站分组</button>
     <button id="a2" onclick="admTab(2)">订单列表</button>
+    <button id="a3" onclick="admTab(3)">支付核对</button>
   </div>
 
   <div id="admGrouped"></div>
   <div id="admOrders" class="hide"></div>
+  <div id="admPay" class="hide"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -397,7 +466,7 @@ async function submitOrder() {
     items = [blankItem()]; renderItems(); calc();
     $('fNote').value = '';
     tab(2);
-    setTimeout(() => openDetail(d.no, uid), 400);
+    setTimeout(() => openPay(d.no), 400);
   } catch (e) {
     err.textContent = '❌ ' + e.message;
   } finally {
@@ -474,6 +543,11 @@ function detailHtml(o) {
     '<div class="kv"><span>收货地址</span><b>' + esc(o.addr) + '</b></div>' +
     (o.note ? '<div class="kv"><span>备注</span><b>' + esc(o.note) + '</b></div>' : '') +
     (o.rider ? '<div class="kv"><span>代拿人员</span><b>' + esc(o.rider) + '</b></div>' : '') +
+    '<div class="kv"><span>支付状态</span><b><span class="payTag p' + o.pay.st + '">' + o.pay.stText + '</span>' +
+    (o.pay.method ? '<span class="payTag p0">' + (o.pay.method === 'wechat' ? '微信' : '支付宝') + '</span>' : '') +
+    '</b></div>' +
+    (o.pay.atText ? '<div class="kv"><span>确认付款</span><b>' + o.pay.atText + '</b></div>' : '') +
+    (o.pay.note ? '<div class="kv"><span>备注</span><b>' + esc(o.pay.note) + '</b></div>' : '') +
     '</div>' +
     '<div class="card"><div class="top"><span style="font-size:13px;color:#8b93a7">快递信息（' + o.itemCount + ' 条）</span></div>' +
     itemsHtml + '</div>' +
@@ -482,6 +556,14 @@ function detailHtml(o) {
     '<div class="kv"><span>大件</span><b style="color:#f59e0b">' + o.bigQty + ' 件 × 2 元 = ¥' + (o.bigQty * 2) + '</b></div>' +
     '<div class="kv" style="border-top:1px solid #2a2f3a;margin-top:6px;padding-top:8px">' +
     '<span>订单金额</span><b style="color:#22c55e;font-size:17px">¥' + o.total + '</b></div></div>' +
+    (o.pay.st === 0
+      ? '<button class="btn" onclick="openPay(\'' + o.no + '\')">去支付 ¥' + o.total + '</button>'
+      : (o.pay.st === 1
+          ? '<div class="payNote">已提交付款确认，等待管理员核对到账后生效。</div>'
+          : (o.pay.st === 2
+              ? '<div class="payNote" style="background:#0d3320;border-color:#1f4d33;color:#9fe3b8">✅ 管理员已确认收款</div>'
+              : '<div class="payNote" style="background:#3a1113;border-color:#5c1a1d;color:#f87171">⚠ ' + o.pay.stText +
+                (o.pay.note ? '：' + esc(o.pay.note) : '') + '，请联系管理员</div>'))) +
     ((o.status === 0 || o.status === 1)
       ? '<button class="btn ghost" onclick="cancelOrder(\'' + o.no + '\')">取消订单</button>' : '') +
     '<button class="btn ghost" style="margin-top:8px" onclick="openDetail(\'' + o.no + '\')">刷新状态</button>';
@@ -511,6 +593,142 @@ async function queryOrder() {
   } catch (e) { $('queryErr').textContent = '❌ ' + e.message; }
 }
 
+/* ================= 支付 ================= */
+let payOrder = null, payMethod = "", qrInfo = null;
+
+async function openPay(no) {
+  hide('app', false); hide('detail', false); hide('pay', true);
+  $('payBody').innerHTML = '<div class="empty">加载中…</div>';
+  window.scrollTo(0, 0);
+  try {
+    const d = await api({ action: 'xdetail', no: no, uid: localStorage.getItem(LS_UID) });
+    const qi = await api({ action: 'qrinfo' });
+    if (!d.ok) { $('payBody').innerHTML = '<div class="empty">❌ ' + (d.msg || '') + '</div>'; return; }
+    payOrder = d.order; qrInfo = qi; payMethod = "";
+    renderPay();
+  } catch (e) { $('payBody').innerHTML = '<div class="empty">❌ ' + e.message + '</div>'; }
+}
+function closePay() { hide('pay', false); hide('app', true); if (!$('p2').classList.contains('hide')) loadMy(); }
+
+function renderPay() {
+  const o = payOrder;
+  const cfg = (qrInfo && qrInfo.cfg) || { wechat: 1, alipay: 1 };
+  const has = (qrInfo && qrInfo.has) || {};
+
+  if (o.pay.st !== 0) {
+    $('payBody').innerHTML =
+      '<div class="card" style="text-align:center;padding:26px 14px">' +
+      '<div style="font-size:34px;margin-bottom:8px">' + (o.pay.st === 2 ? '✅' : (o.pay.st === 1 ? '⏳' : '⚠️')) + '</div>' +
+      '<div style="font-size:16px;font-weight:600">' + o.pay.stText + '</div>' +
+      '<div class="hint" style="margin-top:8px">' +
+      (o.pay.st === 1 ? '你已提交付款确认，管理员核对到账后会更新状态。' :
+       o.pay.st === 2 ? '管理员已确认收款，感谢使用。' :
+       '请联系管理员处理' + (o.pay.note ? '：' + esc(o.pay.note) : '。')) + '</div>' +
+      '<div class="kv" style="justify-content:center;gap:14px;margin-top:14px">' +
+      '<span>单号 ' + o.no + '</span><b>¥' + o.total + '</b></div></div>' +
+      '<button class="btn ghost" onclick="openDetail(\'' + o.no + '\')">查看订单详情</button>';
+    return;
+  }
+
+  const pc = (m, icon, label) => {
+    const on = cfg[m] && has[m];
+    return '<div class="pc' + (payMethod === m ? ' on' : '') + '"' +
+      (on ? ' onclick="choosePay(\'' + m + '\')"' : ' style="opacity:.4"') + '>' +
+      '<span class="ico">' + icon + '</span><b>' + label + '</b>' +
+      '<div style="font-size:10px;margin-top:4px">' + (on ? '点击扫码支付' : '暂不可用') + '</div></div>';
+  };
+
+  $('payBody').innerHTML =
+    '<div class="card"><div class="payAmount">' +
+    '<div style="font-size:12px;color:#8b93a7">需支付</div>' +
+    '<div class="big">¥' + o.total + '</div>' +
+    '<div class="no">订单号 ' + o.no + '</div></div></div>' +
+    '<div class="hint">选择支付方式</div>' +
+    '<div class="payopt">' + pc('wechat', '💚', '微信支付') + pc('alipay', '💙', '支付宝') + '</div>' +
+    '<div class="payNote">扫码付款后请点「我已付款」，管理员核对到账后订单才会显示已收款。<br>' +
+    '请务必核对金额 ¥' + o.total + ' 与订单号，避免付错。</div>' +
+    '<button class="btn ghost" onclick="openDetail(\'' + o.no + '\')">查看订单详情</button>';
+}
+
+function choosePay(m) {
+  if (!qrInfo || !qrInfo.cfg[m] || !qrInfo.has[m]) { toast('该支付方式暂不可用'); return; }
+  payMethod = m;
+  renderPay();
+  $('qrTitle').textContent = (m === 'wechat' ? '微信' : '支付宝') + '扫码支付';
+  $('qrNo').textContent = '订单号 ' + payOrder.no;
+  $('qrAmt').textContent = '¥' + payOrder.total;
+  $('qrImg').src = API + '?action=qrimg&type=' + m + '&_=' + Date.now();
+  hide('qrMask', true);
+}
+function closeQr() { hide('qrMask', false); }
+async function confirmPaid() {
+  const btn = $('paidBtn');
+  if (btn.disabled) return;
+  btn.disabled = true; btn.textContent = '提交中…';
+  try {
+    const d = await api({ action: 'xpay', uid: localStorage.getItem(LS_UID),
+                          no: payOrder.no, method: payMethod });
+    if (!d.ok) throw new Error(d.msg || '提交失败');
+    closeQr();
+    toast('已提交，等待管理员核实');
+    payOrder.pay.st = 1; payOrder.pay.stText = '待人工核实'; payOrder.pay.method = payMethod;
+    renderPay();
+    setTimeout(() => showSlipUpload(), 300);
+  } catch (e) {
+    alert('❌ ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '我已付款';
+  }
+}
+
+function showSlipUpload() {
+  const box = $('payBody');
+  box.innerHTML += '<div class="card" id="slipBox">' +
+    '<div class="top"><span style="font-size:13px">上传付款截图（可选）</span></div>' +
+    '<div class="hint" style="margin-bottom:10px">上传后管理员能更快核对到账</div>' +
+    '<button class="btn ghost" onclick="pickSlip()">选择截图</button>' +
+    '<input type="file" id="slipInput" accept="image/*" style="display:none" onchange="onSlip(this)">' +
+    '<div class="hint" id="slipMsg" style="margin-top:8px"></div></div>';
+}
+function pickSlip() { $('slipInput').click(); }
+function compressImage(file, maxW) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const sc = Math.min(1, maxW / img.width);
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * sc);
+      c.height = Math.round(img.height * sc);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('图片读取失败')); };
+    img.src = url;
+  });
+}
+async function onSlip(el) {
+  const f = el.files && el.files[0];
+  if (!f) return;
+  const msg = $('slipMsg');
+  msg.textContent = '处理中…';
+  try {
+    const data = await compressImage(f, 900);
+    const body = new URLSearchParams();
+    body.append('no', payOrder.no);
+    body.append('uid', localStorage.getItem(LS_UID) || '');
+    body.append('data', data);
+    await fetch(API + '?action=xslip', { method: 'POST', mode: 'no-cors', body: body });
+    await new Promise((r) => setTimeout(r, 1200));
+    const d = await api({ action: 'xdetail', no: payOrder.no, uid: localStorage.getItem(LS_UID) });
+    if (d.ok && d.order.pay.shot) msg.innerHTML = '<span style="color:#22c55e">✅ 截图已上传</span>';
+    else msg.innerHTML = '<span style="color:#f87171">上传失败，请重试</span>';
+  } catch (e) {
+    msg.innerHTML = '<span style="color:#f87171">❌ ' + e.message + '</span>';
+  }
+}
+
 /* ================= 后台 ================= */
 let admData = null;
 const openGroups = {};
@@ -522,7 +740,8 @@ function admKeyVal() {
 function admTab(n) {
   $('a1').classList.toggle('on', n === 1);
   $('a2').classList.toggle('on', n === 2);
-  hide('admGrouped', n === 1); hide('admOrders', n === 2);
+  $('a3').classList.toggle('on', n === 3);
+  hide('admGrouped', n === 1); hide('admOrders', n === 2); hide('admPay', n === 3);
 }
 async function admLoad() {
   const key = admKeyVal();
@@ -532,6 +751,7 @@ async function admLoad() {
     const d = await api({ action: 'xadmin', key: key,
                           date: $('admDate').value || '', status: $('admStatus').value || '' });
     if (!d.ok) { $('admGrouped').innerHTML = '<div class="empty">❌ ' + (d.msg || '口令不对') + '</div>'; return; }
+    try { qrInfo = await api({ action: 'qrinfo' }); } catch (e) { qrInfo = null; }
     admData = d; renderAdm();
   } catch (e) { $('admGrouped').innerHTML = '<div class="empty">❌ ' + e.message + '</div>'; }
 }
@@ -589,6 +809,102 @@ function renderAdm() {
       '<div class="kv" style="margin-top:6px"><span>合计 ' + o.totalQty + ' 件</span>' +
       '<b style="color:#22c55e">¥' + o.total + '</b></div>' + acts + '</div>';
   }).join('');
+
+  renderAdmPay(list);
+}
+
+/* ---- 支付核对 ---- */
+function renderAdmPay(list) {
+  const cfg = (qrInfo && qrInfo.cfg) || { wechat: 1, alipay: 1 };
+  const has = (qrInfo && qrInfo.has) || {};
+  const sorted = list.slice().sort((a, b) => {
+    const w = (o) => (o.pay.st === 1 ? 0 : (o.pay.st === 0 ? 1 : 2));
+    return w(a) - w(b) || b.t - a.t;
+  });
+  const need = sorted.filter((o) => o.pay.st === 1).length;
+
+  let h = '<div class="hint" style="margin:0 0 10px">待核实 ' + need + ' 笔 · 点缩略图看付款截图</div>';
+
+  if (!sorted.length) h += '<div class="empty">' + admData.day + ' 没有订单</div>';
+  else {
+    h += '<div class="card">';
+    h += sorted.map((o) => {
+      const p = o.pay;
+      let acts = '<div class="acts">';
+      if (p.st !== 2) acts += '<button class="go" onclick="setPay(\'' + o.no + '\',2)">确认收款</button>';
+      if (p.st !== 3) acts += '<button class="bad" onclick="setPay(\'' + o.no + '\',3)">付款异常</button>';
+      if (p.st === 2) acts += '<button class="bad" onclick="setPay(\'' + o.no + '\',4)">标记退款</button>';
+      acts += '</div>';
+      return '<div class="payRow">' +
+        (p.shot
+          ? '<img class="shot" src="' + API + '?action=shot&no=' + o.no + '&_=' + Date.now() +
+            '" onclick="window.open(this.src)" alt="截图">'
+          : '<div class="shot" style="width:40px;height:40px;border-radius:8px;border:1px dashed #2a2f3a;' +
+            'display:flex;align-items:center;justify-content:center;font-size:9px;color:#5b6478">无</div>') +
+        '<div class="pl"><b>' + esc(o.name) + ' · ¥' + o.total +
+        '<span class="payTag p' + p.st + '">' + p.stText + '</span></b>' +
+        '<small>' + o.no + ' · ' + (p.method === 'wechat' ? '微信' : (p.method === 'alipay' ? '支付宝' : '未选')) +
+        (p.atText ? ' · ' + p.atText : '') + '</small></div>' + acts + '</div>';
+    }).join('');
+    h += '</div>';
+  }
+
+  /* 收款码管理 */
+  const qr = (t, label, icon) => {
+    const on = cfg[t];
+    return '<div class="one"><small>' + icon + ' ' + label + '</small>' +
+      (has[t] ? '<img src="' + API + '?action=qrimg&type=' + t + '&_=' + Date.now() + '" alt="">'
+              : '<div style="padding:26px 0;color:#5b6478;font-size:11px">未上传</div>') +
+      '<button onclick="pickQr(\'' + t + '\')">上传/更换</button>' +
+      '<button class="' + (on ? '' : 'off') + '" onclick="togglePay(\'' + t + '\',' + (on ? 0 : 1) + ')">' +
+      (on ? '点击停用' : '点击启用') + '</button></div>';
+  };
+  h += '<div class="card"><div class="top"><span style="font-size:13px">收款码管理</span></div>' +
+    '<div class="qrset">' + qr('wechat', '微信', '💚') + qr('alipay', '支付宝', '💙') + '</div>' +
+    '<div class="hint">图片存在私有存储桶，只有通过本站才能看到，不会出现在公开图床。</div>' +
+    '<input type="file" id="qrFile" accept="image/*" style="display:none" onchange="onQrFile(this)">' +
+    '</div>';
+
+  $('admPay').innerHTML = h;
+}
+
+let qrUploadType = '';
+function pickQr(t) { qrUploadType = t; $('qrFile').value = ''; $('qrFile').click(); }
+async function onQrFile(el) {
+  const f = el.files && el.files[0];
+  if (!f) return;
+  try {
+    const data = await compressImage(f, 800);
+    const body = new URLSearchParams();
+    body.append('type', qrUploadType);
+    body.append('data', data);
+    await fetch(API + '?action=setqr', { method: 'POST', mode: 'no-cors', body: body });
+    await new Promise((r) => setTimeout(r, 1500));
+    qrInfo = await api({ action: 'qrinfo' });
+    toast('收款码已更新');
+    renderAdm();
+  } catch (e) { alert('上传失败：' + e.message); }
+}
+async function togglePay(t, on) {
+  try {
+    const d = await api({ action: 'paycfg', key: admKeyVal(), type: t, on: on });
+    if (!d.ok) { alert(d.msg || '操作失败'); return; }
+    qrInfo = { cfg: d.cfg, has: (qrInfo && qrInfo.has) || {} };
+    toast((t === 'wechat' ? '微信' : '支付宝') + (on ? '已启用' : '已停用'));
+    renderAdm();
+  } catch (e) { alert('操作失败：' + e.message); }
+}
+async function setPay(no, st) {
+  const names = { 2: '确认收款', 3: '标记付款异常', 4: '标记已退款' };
+  if (!confirm('确定将该订单标记为「' + names[st] + '」？')) return;
+  let note = '';
+  if (st !== 2) note = prompt('备注（选填）', '') || '';
+  try {
+    const d = await api({ action: 'xpayadmin', key: admKeyVal(), no: no, st: st, note: note });
+    if (!d.ok) { alert(d.msg || '操作失败'); return; }
+    toast('已标记为「' + d.stText + '」');
+    admLoad();
+  } catch (e) { alert('操作失败：' + e.message); }
 }
 function toggleGroup(name) {
   openGroups[name] = openGroups[name] === false ? true : false;
