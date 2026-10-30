@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<meta name="description" content="校园快递代拿 · 1-2元/件，送到宿舍楼下">
+<title>快递代拿 · 校园配送</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
+<style>
+:root{--bg:#0f1115;--card:#1a1e26;--line:#2a2f3a;--dim:#8b93a7;--txt:#e8ecf3;
+--free:#22c55e;--warn:#f59e0b;--blue:#3b82f6;--purple:#8b5cf6;--cyan:#06b6d4;--red:#ef4444}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);
+font:15px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+padding:12px 12px 40px;max-width:560px;margin:0 auto}
+a{color:inherit;text-decoration:none}
+.nav{display:flex;gap:8px;margin-bottom:14px}
+.nav a,.nav span{flex:1;text-align:center;padding:9px;border-radius:10px;font-size:13px;
+background:var(--card);border:1px solid var(--line);color:var(--dim)}
+.nav .on{background:#0d3320;border-color:#1f4d33;color:#9fe3b8}
+h1{font-size:20px;margin:0 0 4px}
+.slogan{color:var(--dim);font-size:13px;margin-bottom:12px;line-height:1.6}
+.pricebar{display:flex;gap:8px;margin-bottom:14px}
+.pricebar div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.pricebar b{display:block;font-size:17px;color:var(--free)}
+.pricebar small{color:var(--dim);font-size:11px}
+.tabs{display:flex;gap:6px;margin-bottom:14px;background:var(--card);border:1px solid var(--line);
+border-radius:12px;padding:5px}
+.tabs button{flex:1;background:transparent;border:none;color:var(--dim);padding:9px;border-radius:9px;font-size:14px}
+.tabs button.on{background:#252b36;color:var(--txt);font-weight:600}
+label{display:block;font-size:12px;color:var(--dim);margin:12px 0 6px}
+input,textarea,select{width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;
+padding:12px;font-size:15px;color:var(--txt);outline:none;font-family:inherit}
+input:focus,textarea:focus{border-color:var(--free)}
+textarea{resize:vertical;min-height:78px;line-height:1.6}
+.hint{font-size:11px;color:#5b6478;margin-top:5px}
+.qty{display:flex;align-items:center;gap:10px}
+.qty button{width:44px;height:44px;flex:0 0 auto;border-radius:10px;background:var(--card);
+border:1px solid var(--line);color:var(--txt);font-size:20px;line-height:1}
+.qty input{text-align:center;flex:1}
+.sum{background:linear-gradient(135deg,#0d3320,#12202e);border:1px solid #1f4d33;border-radius:12px;
+padding:14px;margin:16px 0;font-size:14px}
+.sum .row2{display:flex;justify-content:space-between;margin:4px 0;color:#9fe3b8}
+.sum .total{font-size:22px;font-weight:700;color:var(--free)}
+.btn{width:100%;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:600;
+background:var(--free);color:#05240f;margin-top:6px}
+.btn:disabled{opacity:.5}
+.btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--txt);font-weight:400;font-size:14px;padding:11px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:10px}
+.card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.no{font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--dim)}
+.chip{font-size:11px;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.s0{background:#3a2c0a;color:var(--warn)}
+.s1{background:#0c2440;color:var(--blue)}
+.s2{background:#241a3d;color:var(--purple)}
+.s3{background:#08303a;color:var(--cyan)}
+.s4{background:#0d3320;color:var(--free)}
+.s5{background:#262b35;color:var(--dim)}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--dim)}
+.kv b{color:var(--txt);font-weight:500}
+.mono{font-family:ui-monospace,Menlo,monospace;letter-spacing:.5px}
+.steps{display:flex;margin:14px 0 6px}
+.step{flex:1;text-align:center;position:relative;font-size:10px;color:#4a5262}
+.step .dot{width:9px;height:9px;border-radius:50%;background:#2f3644;margin:0 auto 5px}
+.step.done{color:var(--free)}
+.step.done .dot{background:var(--free)}
+.step:not(:last-child):after{content:'';position:absolute;top:4px;left:60%;width:80%;height:1px;background:#2f3644}
+.step.done:not(:last-child):after{background:var(--free)}
+.empty{text-align:center;color:var(--dim);font-size:13px;padding:34px 0}
+.center{min-height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:20px}
+.center h2{font-size:20px;margin:0 0 8px}
+.center p{color:var(--dim);font-size:13px;margin:0 0 20px;line-height:1.7}
+.center input{max-width:300px;text-align:center}
+.center .btn{max-width:300px}
+.stat{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.stat div{flex:1;min-width:calc(50% - 4px);background:var(--card);border:1px solid var(--line);
+border-radius:12px;padding:11px 12px}
+.stat b{display:block;font-size:19px}
+.stat small{color:var(--dim);font-size:11px}
+.acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.acts button{flex:0 0 auto;padding:7px 11px;font-size:12px;border-radius:8px;
+background:#252b36;border:1px solid var(--line);color:var(--txt)}
+.acts button.go{background:var(--free);color:#05240f;border-color:transparent}
+.acts button.bad{background:#3a1113;color:#f87171;border-color:#5c1a1d}
+.err{color:#f87171;font-size:13px;margin-top:10px;max-width:340px;word-break:break-all}
+.toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#0d3320;
+border:1px solid #1f4d33;color:#9fe3b8;padding:12px 20px;border-radius:12px;font-size:14px;
+opacity:0;pointer-events:none;transition:.25s;z-index:99}
+.toast.show{opacity:1}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- 注册门 -->
+<div id="gate" class="center hide">
+  <h2>📦 快递代拿</h2>
+  <p>先登记一下姓名，方便代拿人员联系你</p>
+  <input id="gateName" placeholder="请输入姓名" maxlength="20">
+  <button class="btn" id="gateBtn" onclick="doRegister()">进入</button>
+  <div class="err" id="gateErr"></div>
+</div>
+
+<!-- 主界面 -->
+<div id="app" class="hide">
+  <div class="nav">
+    <a href="index.html">🔌 充电桩</a>
+    <span class="on">📦 快递代拿</span>
+  </div>
+  <h1>快递代拿</h1>
+  <div class="slogan">快递不用自己跑，帮你拿到宿舍楼下，送货上门。</div>
+  <div class="pricebar">
+    <div><b>1 元/件</b><small>普通快递</small></div>
+    <div><b>2 元/件</b><small>大件/特殊（接单人员确认）</small></div>
+  </div>
+
+  <div class="tabs">
+    <button id="t1" class="on" onclick="tab(1)">我要下单</button>
+    <button id="t2" onclick="tab(2)">我的订单</button>
+    <button id="t3" onclick="tab(3)">查询订单</button>
+  </div>
+
+  <!-- 下单 -->
+  <div id="p1">
+    <label>称呼</label>
+    <input id="fName" placeholder="怎么称呼你" maxlength="20">
+    <label>手机号</label>
+    <input id="fPhone" type="tel" inputmode="numeric" placeholder="11 位手机号" maxlength="15">
+    <label>取件码</label>
+    <textarea id="fCodes" placeholder="一个取件码一行，可填多个&#10;例如：&#10;1-2-3456&#10;8-9-0001"></textarea>
+    <div class="hint">支持多个取件码，每行一个</div>
+    <label>快递数量</label>
+    <div class="qty">
+      <button onclick="stepQty(-1)">−</button>
+      <input id="fQty" type="number" inputmode="numeric" value="1" min="1" max="20" oninput="calc()">
+      <button onclick="stepQty(1)">+</button>
+    </div>
+    <label>收货地址</label>
+    <input id="fAddr" placeholder="宿舍楼栋 + 楼层 + 房间号" maxlength="60">
+    <label>备注（选填）</label>
+    <textarea id="fNote" placeholder="放门口 / 到了打电话 / 其他要求" maxlength="100" style="min-height:64px"></textarea>
+
+    <div class="sum">
+      <div class="row2"><span>单价</span><span>¥<span id="sUnit">1.00</span> / 件</span></div>
+      <div class="row2"><span>数量</span><span><span id="sQty">1</span> 件</span></div>
+      <div class="row2" style="margin-top:10px"><span style="color:#e8ecf3">预计费用</span>
+        <span class="total">¥<span id="sTotal">1.00</span></span></div>
+      <div class="hint" style="color:#7fb894;margin-top:8px">
+        大件或特殊快递由接单人员确认后调整为 2 元/件，调整后会在这里显示最终价。
+      </div>
+    </div>
+    <button class="btn" id="submitBtn" onclick="submitOrder()">提交代拿订单</button>
+    <div class="err" id="formErr"></div>
+  </div>
+
+  <!-- 我的订单 -->
+  <div id="p2" class="hide">
+    <div id="myList"><div class="empty">加载中…</div></div>
+    <button class="btn ghost" onclick="loadMy()">刷新列表</button>
+  </div>
+
+  <!-- 查询订单 -->
+  <div id="p3" class="hide">
+    <label>手机号</label>
+    <input id="qPhone" type="tel" inputmode="numeric" placeholder="下单时填的手机号" maxlength="15">
+    <label>订单编号</label>
+    <input id="qNo" placeholder="例如 KD26103014051234" maxlength="24">
+    <div class="hint">手机号 + 订单编号需同时匹配，否则看不到取件码和详细地址</div>
+    <button class="btn" onclick="queryOrder()">查询</button>
+    <div class="err" id="queryErr"></div>
+    <div id="queryResult" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- 详情 -->
+<div id="detail" class="hide" style="margin-top:6px">
+  <button class="btn ghost" onclick="closeDetail()">← 返回</button>
+  <div id="detailBody"></div>
+</div>
+
+<!-- 后台 -->
+<div id="admin" class="hide">
+  <div class="nav"><a href="index.html">🔌 充电桩</a><span class="on">📦 快递后台</span></div>
+  <h1>快递代拿 · 管理</h1>
+  <div class="tabs" style="margin-top:12px">
+    <input id="admKey" placeholder="管理员口令" style="text-align:left">
+    <button class="btn" style="width:88px;margin:0;padding:11px;font-size:14px" onclick="admLoad()">进入</button>
+  </div>
+  <div class="stat" id="admStat"></div>
+  <div class="tabs" style="padding:10px">
+    <input id="admDate" type="date" style="text-align:left;padding:9px">
+    <button class="btn" style="width:88px;margin:0;padding:9px;font-size:13px" onclick="admLoad()">筛选</button>
+  </div>
+  <div id="admList"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = "https://1517412699-356gtpqv4h.ap-guangzhou.tencentscf.com/api";
+const LS_UID = 'cherry_uid', LS_NAME = 'cherry_name', LS_KEY = 'cherry_admin_key';
+const ST_TEXT = ["待接单", "已接单", "取件中", "配送中", "已送达", "已取消"];
+const ST_STEPS = ["待接单", "已接单", "取件中", "配送中", "已送达"];
+
+const $ = (id) => document.getElementById(id);
+const hide = (id, on) => { $(id).classList.toggle('hide', !on); };
+let seq = 0;
+
+function api(params, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const cb = 'cbk' + (++seq) + Date.now();
+    const s = document.createElement('script');
+    let done = false;
+    const qs = Object.keys(params).map((k) => k + '=' + encodeURIComponent(params[k] == null ? '' : params[k])).join('&');
+    const t = setTimeout(() => { cleanup(); reject(new Error('请求超时')); }, timeoutMs || 15000);
+    function cleanup() {
+      clearTimeout(t);
+      try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+      if (s.parentNode) s.parentNode.removeChild(s);
+    }
+    window[cb] = (d) => { done = true; cleanup(); resolve(d); };
+    s.onerror = () => { if (!done) { cleanup(); reject(new Error('网络错误')); } };
+    s.src = API + '?' + qs + '&callback=' + cb + '&_=' + Date.now();
+    document.head.appendChild(s);
+  });
+}
+
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+/* ---------- 注册 ---------- */
+async function doRegister() {
+  const v = $('gateName').value.trim();
+  if (!v) { $('gateErr').textContent = '请填写姓名'; return; }
+  $('gateBtn').disabled = true;
+  try {
+    const d = await api({ action: 'register', name: v });
+    if (!d.ok) throw new Error(d.msg || '登记失败');
+    localStorage.setItem(LS_UID, d.id);
+    localStorage.setItem(LS_NAME, d.name);
+    hide('gate', false); hide('app', true);
+    initApp();
+  } catch (e) {
+    $('gateErr').textContent = '❌ ' + e.message;
+  } finally { $('gateBtn').disabled = false; }
+}
+
+/* ---------- 下单 ---------- */
+function tab(n) {
+  [1, 2, 3].forEach((i) => {
+    $('t' + i).classList.toggle('on', i === n);
+    hide('p' + i, i === n);
+  });
+  hide('detail', false);
+  if (n === 2) loadMy();
+}
+function stepQty(d) {
+  const el = $('fQty');
+  let v = parseInt(el.value, 10) || 1;
+  v = Math.min(20, Math.max(1, v + d));
+  el.value = v; calc();
+}
+function calc() {
+  let q = parseInt($('fQty').value, 10);
+  if (!(q >= 1)) q = 1;
+  if (q > 20) q = 20;
+  $('sQty').textContent = q;
+  $('sUnit').textContent = '1.00';
+  $('sTotal').textContent = (q * 1).toFixed(2);
+}
+
+let submitting = false;
+async function submitOrder() {
+  if (submitting) return;
+  const uid = localStorage.getItem(LS_UID);
+  const name = $('fName').value.trim();
+  const phone = $('fPhone').value.trim();
+  const codes = $('fCodes').value.trim();
+  const qty = parseInt($('fQty').value, 10) || 1;
+  const addr = $('fAddr').value.trim();
+  const note = $('fNote').value.trim();
+  const err = $('formErr');
+  err.textContent = '';
+
+  if (!name) return (err.textContent = '请填写称呼');
+  if (!/^\d{6,15}$/.test(phone)) return (err.textContent = '手机号格式不对');
+  if (!codes) return (err.textContent = '请填写取件码');
+  if (qty < 1 || qty > 20) return (err.textContent = '快递数量需在 1 ~ 20 之间');
+  if (!addr) return (err.textContent = '请填写收货地址');
+
+  submitting = true;
+  $('submitBtn').disabled = true;
+  $('submitBtn').textContent = '提交中…';
+  try {
+    const d = await api({ action: 'xcreate', uid: uid, name: name, phone: phone,
+                          codes: codes, qty: qty, addr: addr, note: note });
+    if (!d.ok) {
+      if (d.needReg) { localStorage.removeItem(LS_UID); return boot(); }
+      throw new Error(d.msg || '提交失败');
+    }
+    toast('下单成功，单号 ' + d.no);
+    $('fCodes').value = ''; $('fNote').value = '';
+    tab(2);
+    setTimeout(() => openDetail(d.no, uid), 400);
+  } catch (e) {
+    err.textContent = '❌ ' + e.message;
+  } finally {
+    submitting = false;
+    $('submitBtn').disabled = false;
+    $('submitBtn').textContent = '提交代拿订单';
+  }
+}
+
+/* ---------- 我的订单 ---------- */
+async function loadMy() {
+  const uid = localStorage.getItem(LS_UID);
+  const box = $('myList');
+  box.innerHTML = '<div class="empty">加载中…</div>';
+  try {
+    const d = await api({ action: 'xlist', uid: uid });
+    if (!d.ok) throw new Error(d.msg || '加载失败');
+    if (!d.list.length) { box.innerHTML = '<div class="empty">还没有订单，去下单吧</div>'; return; }
+    box.innerHTML = d.list.map((o) => orderCard(o, true)).join('');
+  } catch (e) {
+    box.innerHTML = '<div class="empty">❌ ' + e.message + '</div>';
+  }
+}
+
+function orderCard(o, clickable) {
+  const s = o.status;
+  return '<div class="card"' + (clickable ? ' onclick="openDetail(\'' + o.no + '\')"' : '') + '>' +
+    '<div class="top"><span class="no">' + o.no + '</span>' +
+    '<span class="chip s' + s + '">' + o.statusText + '</span></div>' +
+    '<div class="kv"><span>' + o.qty + ' 件 · ' + o.addr + '</span><b>¥' + Number(o.total).toFixed(2) + '</b></div>' +
+    '<div class="kv"><span>' + o.tText + '</span><span>' + (o.rider ? '代拿：' + o.rider : '') + '</span></div>' +
+    '</div>';
+}
+
+/* ---------- 详情 ---------- */
+let currentNo = null;
+async function openDetail(no, uidOverride) {
+  const uid = uidOverride || localStorage.getItem(LS_UID);
+  currentNo = no;
+  hide('app', false); hide('detail', true);
+  $('detailBody').innerHTML = '<div class="empty">加载中…</div>';
+  window.scrollTo(0, 0);
+  try {
+    const d = await api({ action: 'xdetail', no: no, uid: uid });
+    if (!d.ok) { $('detailBody').innerHTML = '<div class="empty">❌ ' + (d.msg || '') + '</div>'; return; }
+    $('detailBody').innerHTML = detailHtml(d.order);
+  } catch (e) {
+    $('detailBody').innerHTML = '<div class="empty">❌ ' + e.message + '</div>';
+  }
+}
+function closeDetail() {
+  hide('detail', false);
+  hide('app', true);
+  if ($('p2') && !$('p2').classList.contains('hide')) loadMy();
+}
+
+function detailHtml(o) {
+  const st = o.status;
+  let steps = '';
+  if (st !== 5) {
+    steps = '<div class="steps">' + ST_STEPS.map((t, i) =>
+      '<div class="step' + (i <= st ? ' done' : '') + '"><div class="dot"></div>' + t + '</div>').join('') + '</div>';
+  } else {
+    steps = '<div class="steps"><div class="step done" style="flex:1"><div class="dot"></div>已取消</div></div>';
+  }
+  const codes = (o.codes || []).map((c) => '<span class="mono">' + c + '</span>').join('<br>');
+  return '<div class="card">' +
+    '<div class="top"><span class="no">' + o.no + '</span>' +
+    '<span class="chip s' + st + '">' + o.statusText + '</span></div>' +
+    steps +
+    '<div class="kv"><span>下单时间</span><b>' + o.tText + '</b></div>' +
+    '<div class="kv"><span>快递数量</span><b>' + o.qty + ' 件</b></div>' +
+    '<div class="kv"><span>取件码</span><b style="text-align:right">' + codes + '</b></div>' +
+    '<div class="kv"><span>收货地址</span><b style="text-align:right;max-width:60%">' + o.addr + '</b></div>' +
+    '<div class="kv"><span>联系方式</span><b>' + o.phone + '</b></div>' +
+    (o.note ? '<div class="kv"><span>备注</span><b style="text-align:right;max-width:60%">' + o.note + '</b></div>' : '') +
+    '<div class="kv"><span>单价 × 数量</span><b>¥' + Number(o.unit).toFixed(2) + ' × ' + o.qty + '</b></div>' +
+    '<div class="kv"><span>订单金额</span><b style="color:#22c55e;font-size:16px">¥' + Number(o.total).toFixed(2) + '</b></div>' +
+    (o.rider ? '<div class="kv"><span>代拿人员</span><b>' + o.rider + '</b></div>' : '') +
+    '</div>' +
+    (st === 0 || st === 1
+      ? '<button class="btn ghost" onclick="cancelOrder(\'' + o.no + '\')">取消订单</button>'
+      : '') +
+    '<div class="hint" style="margin-top:10px">订单状态更新后，点下方按钮或重新进入即可看到最新进度。</div>' +
+    '<button class="btn ghost" style="margin-top:8px" onclick="openDetail(\'' + o.no + '\')">刷新状态</button>';
+}
+
+async function cancelOrder(no) {
+  if (!confirm('确定取消这个订单吗？')) return;
+  const uid = localStorage.getItem(LS_UID);
+  try {
+    const d = await api({ action: 'xcancel', no: no, uid: uid });
+    if (!d.ok) { alert(d.msg || '取消失败'); return; }
+    toast('订单已取消');
+    openDetail(no);
+  } catch (e) { alert('取消失败：' + e.message); }
+}
+
+/* ---------- 查询 ---------- */
+async function queryOrder() {
+  const phone = $('qPhone').value.trim();
+  const no = $('qNo').value.trim();
+  $('queryErr').textContent = '';
+  $('queryResult').innerHTML = '';
+  if (!phone || !no) { $('queryErr').textContent = '手机号和订单编号都要填'; return; }
+  try {
+    const d = await api({ action: 'xdetail', no: no, phone: phone });
+    if (!d.ok) {
+      $('queryErr').textContent = d.msg || '查询失败';
+      if (d.brief) {
+        $('queryResult').innerHTML = orderCard(Object.assign({}, d.brief, { tText: d.brief.tText }), false);
+      }
+      return;
+    }
+    $('queryResult').innerHTML = detailHtml(d.order);
+  } catch (e) {
+    $('queryErr').textContent = '❌ ' + e.message;
+  }
+}
+
+/* ---------- 后台 ---------- */
+function admKeyVal() {
+  let k = $('admKey').value.trim() || localStorage.getItem(LS_KEY) || '';
+  if (k) localStorage.setItem(LS_KEY, k);
+  return k;
+}
+async function admLoad() {
+  const key = admKeyVal();
+  if (!key) { $('admList').innerHTML = '<div class="empty">请输入口令</div>'; return; }
+  const date = $('admDate').value || '';
+  $('admList').innerHTML = '<div class="empty">加载中…</div>';
+  try {
+    const d = await api({ action: 'xadmin', key: key, date: date });
+    if (!d.ok) { $('admList').innerHTML = '<div class="empty">❌ ' + (d.msg || '口令不对') + '</div>'; return; }
+    renderAdm(d);
+  } catch (e) { $('admList').innerHTML = '<div class="empty">❌ ' + e.message + '</div>'; }
+}
+function renderAdm(d) {
+  const s = d.stats;
+  $('admStat').innerHTML =
+    '<div><b style="color:#f59e0b">' + s.pending + '</b><small>待接单</small></div>' +
+    '<div><b style="color:#3b82f6">' + s.running + '</b><small>进行中</small></div>' +
+    '<div><b>' + s.todayCount + '</b><small>今日订单</small></div>' +
+    '<div><b style="color:#22c55e">¥' + s.todayRevenue.toFixed(2) + '</b><small>今日营业额</small></div>';
+  if (!d.list.length) { $('admList').innerHTML = '<div class="empty">' + d.day + ' 没有订单</div>'; return; }
+
+  let h = '<div class="hint" style="margin:6px 0 10px">' + d.day + ' · 共 ' + s.dayCount +
+          ' 单 · 已送达收入 ¥' + s.dayRevenue.toFixed(2) + '</div>';
+  for (const o of d.list) {
+    h += '<div class="card">' +
+      '<div class="top"><span class="no">' + o.no + '</span><span class="chip s' + o.status + '">' + o.statusText + '</span></div>' +
+      '<div class="kv"><span>' + o.name + ' · ' + o.phone + '</span><b>' + o.tText + '</b></div>' +
+      '<div class="kv"><span>取件码</span><b class="mono">' + (o.codes || []).join(' / ') + '</b></div>' +
+      '<div class="kv"><span>地址</span><b style="max-width:60%;text-align:right">' + o.addr + '</b></div>' +
+      (o.note ? '<div class="kv"><span>备注</span><b style="max-width:60%;text-align:right">' + o.note + '</b></div>' : '') +
+      '<div class="kv"><span>' + o.qty + ' 件 × ¥' + Number(o.unit).toFixed(2) + '</span><b>¥' + Number(o.total).toFixed(2) + '</b></div>' +
+      '<div class="acts">';
+    const nexts = [[1, '接单'], [2, '取件中'], [3, '配送中'], [4, '已送达']];
+    for (const [st, label] of nexts) {
+      if (o.status < st) h += '<button class="go" onclick="setSt(\'' + o.no + '\',' + st + ')">' + label + '</button>';
+    }
+    h += '<button onclick="setPrice(\'' + o.no + '\',' + (o.unit === 1 ? 2 : 1) + ')">改为 ' + (o.unit === 1 ? '2' : '1') + ' 元/件</button>';
+    if (o.status < 4) h += '<button class="bad" onclick="setSt(\'' + o.no + '\',5)">取消</button>';
+    h += '</div></div>';
+  }
+  $('admList').innerHTML = h;
+}
+async function setSt(no, st) {
+  const key = admKeyVal();
+  let rider = '';
+  if (st === 1) rider = prompt('接单人员姓名（可留空）', '') || '';
+  try {
+    const d = await api({ action: 'xstatus', key: key, no: no, status: st, rider: rider });
+    if (!d.ok) { alert(d.msg || '操作失败'); return; }
+    toast('已更新为「' + d.statusText + '」');
+    admLoad();
+  } catch (e) { alert('操作失败：' + e.message); }
+}
+async function setPrice(no, unit) {
+  const key = admKeyVal();
+  try {
+    const d = await api({ action: 'xprice', key: key, no: no, unit: unit });
+    if (!d.ok) { alert(d.msg || '改价失败'); return; }
+    toast('已改为 ¥' + d.unit + '/件，合计 ¥' + d.total.toFixed(2));
+    admLoad();
+  } catch (e) { alert('改价失败：' + e.message); }
+}
+
+/* ---------- 启动 ---------- */
+function initApp() {
+  hide('app', true);
+  $('fName').value = localStorage.getItem(LS_NAME) || '';
+  calc();
+  tab(1);
+}
+function boot() {
+  if (/[?&]admin=1/.test(location.search)) {
+    hide('app', false); hide('gate', false); hide('admin', true);
+    document.title = '快递代拿 · 管理';
+    $('admDate').value = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+    if (localStorage.getItem(LS_KEY)) admLoad();
+    return;
+  }
+  hide('admin', false);
+  const uid = localStorage.getItem(LS_UID);
+  if (!uid) { hide('app', false); hide('gate', true); return; }
+  hide('gate', false);
+  initApp();
+  // 支持 ?no=xxx 直达详情
+  const m = location.search.match(/[?&]no=([A-Za-z0-9]+)/);
+  if (m) openDetail(m[1]);
+}
+boot();
+</script>
+</body>
+</html>
