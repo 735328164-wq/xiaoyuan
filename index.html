@@ -80,9 +80,60 @@ td.name{font-weight:600}
 .off-badge{color:#f87171}
 .mini{padding:6px 10px;font-size:12px;border-radius:8px;flex:0 0 auto}
 .wide{max-width:100%}
+
+/* ============ 首次访问欢迎弹窗 ============ */
+.wmask{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;
+display:flex;align-items:center;justify-content:center;padding:16px;
+-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+opacity:0;animation:wFade .22s ease-out forwards}
+@keyframes wFade{to{opacity:1}}
+.wbox{background:#151a21;border:1px solid #2a2f3a;border-radius:18px;width:100%;max-width:380px;
+max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+padding:14px 16px 18px;transform:translateY(8px);animation:wUp .24s ease-out .02s forwards}
+@keyframes wUp{to{transform:translateY(0)}}
+.wposter{width:100%;height:auto;object-fit:contain;display:block;border-radius:14px;
+background:#eef0fb;margin-bottom:14px}
+.wbox h2{font-size:19px;margin:0 0 4px;text-align:center;color:#e8ecf3}
+.wsub{font-size:12.5px;color:#8b93a7;text-align:center;margin-bottom:14px}
+.wbody{font-size:13.5px;color:#c3cad8;line-height:1.75}
+.wbody p{margin:0 0 10px}
+.witem{display:flex;gap:9px;align-items:flex-start;margin:8px 0;font-size:13px;color:#c3cad8}
+.witem .ico{flex:0 0 auto;font-size:15px;line-height:1.5}
+.witem b{color:#e8ecf3;font-weight:600}
+.wpromo{background:linear-gradient(135deg,#0d3320,#14311f);border:1px solid #1f4d33;
+border-radius:12px;padding:13px;margin:14px 0 16px;text-align:center}
+.wpromo .t1{font-size:13.5px;color:#9fe3b8;margin-bottom:6px}
+.wpromo .t2{font-size:13px;color:#9fe3b8}
+.wpromo .price{font-size:26px;font-weight:800;color:#22c55e;letter-spacing:.5px}
+.wpromo .t3{font-size:11.5px;color:#7fb894;margin-top:8px;line-height:1.6}
+.wbtn{width:100%;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;
+background:#22c55e;color:#05240f}
+.wbtn:active{opacity:.9}
 </style>
 </head>
 <body>
+
+<!-- ============ 首次访问欢迎弹窗 ============ -->
+<div id="welcomeMask" class="wmask" style="display:none">
+  <div class="wbox">
+    <img class="wposter" id="wPoster" src="public/images/welcome-poster.png" alt="校小二欢迎你"
+         onerror="this.style.display='none'">
+    <h2>欢迎使用校小二！</h2>
+    <div class="wsub">校园生活服务，让校园生活更方便。</div>
+    <div class="wbody">
+      <p>同学你好！欢迎使用校小二！</p>
+      <p>校小二致力于为同学们提供便捷的校园生活服务：</p>
+      <div class="witem"><span class="ico">🔌</span><span><b>充电桩查询</b>：方便查看校园充电桩信息，让充电更加省心。</span></div>
+      <div class="witem"><span class="ico">📦</span><span><b>快递代取</b>：不用亲自跑快递站，帮你取件并送到宿舍。</span></div>
+    </div>
+    <div class="wpromo">
+      <div class="t1">🎉 快递代拿优惠活动正在进行！</div>
+      <div class="t2">现在活动价 <span class="price">1<span style="font-size:15px">元</span>/单</span></div>
+      <div class="t3">感兴趣的同学可以去体验一下，也欢迎推荐给身边的同学！</div>
+    </div>
+    <button class="wbtn" onclick="closeWelcome()">我知道了，开始体验</button>
+  </div>
+</div>
 
 <!-- ============ 注册门 ============ -->
 <div id="gate" class="center" style="display:none">
@@ -323,8 +374,27 @@ async function setBlock(uid, blocked) {
   } catch (e) { alert('操作失败：' + e.message); }
 }
 
+/* ================== 首次访问欢迎弹窗 ================== */
+const WELCOME_KEY = 'cherry_welcome_v1';
+
+function maybeWelcome() {
+  if (/[?&]admin=1/.test(location.search)) return;   // 后台不弹
+  try {
+    if (!localStorage.getItem(WELCOME_KEY)) {
+      $('welcomeMask').style.display = 'flex';
+      document.body.style.overflow = 'hidden';       // 弹窗期间禁止背景滚动
+    }
+  } catch (e) { /* 隐私模式等拿不到 localStorage，就静默不弹 */ }
+}
+function closeWelcome() {
+  try { localStorage.setItem(WELCOME_KEY, '1'); } catch (e) { /* 忽略 */ }
+  $('welcomeMask').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
 /* ================== 启动 ================== */
 (function boot() {
+  maybeWelcome();
   if (/[?&]admin=1/.test(location.search)) {
     show('app', false); show('gate', false); show('blocked', false); show('admin', true);
     document.title = '用户管理';
