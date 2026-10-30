@@ -8,12 +8,12 @@
 <title>快递代拿 · 校园配送</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
 <style>
-:root{--bg:#0f1115;--card:#1a1e26;--line:#2a2f3a;--dim:#8b93a7;--txt:#e8ecf3;
+:root{--bg:#0f1115;--card:#1a1e26;--card2:#20252f;--line:#2a2f3a;--dim:#8b93a7;--txt:#e8ecf3;
 --free:#22c55e;--warn:#f59e0b;--blue:#3b82f6;--purple:#8b5cf6;--cyan:#06b6d4;--red:#ef4444}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--txt);
 font:15px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-padding:12px 12px 40px;max-width:560px;margin:0 auto}
+padding:12px 12px 44px;max-width:560px;margin:0 auto}
 a{color:inherit;text-decoration:none}
 .nav{display:flex;gap:8px;margin-bottom:14px}
 .nav a,.nav span{flex:1;text-align:center;padding:9px;border-radius:10px;font-size:13px;
@@ -33,16 +33,37 @@ label{display:block;font-size:12px;color:var(--dim);margin:12px 0 6px}
 input,textarea,select{width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;
 padding:12px;font-size:15px;color:var(--txt);outline:none;font-family:inherit}
 input:focus,textarea:focus{border-color:var(--free)}
-textarea{resize:vertical;min-height:78px;line-height:1.6}
+textarea{resize:vertical;min-height:64px;line-height:1.6}
 .hint{font-size:11px;color:#5b6478;margin-top:5px}
-.qty{display:flex;align-items:center;gap:10px}
-.qty button{width:44px;height:44px;flex:0 0 auto;border-radius:10px;background:var(--card);
-border:1px solid var(--line);color:var(--txt);font-size:20px;line-height:1}
-.qty input{text-align:center;flex:1}
+
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:11px}
+.itemHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.itemHead b{font-size:14px}
+.itemHead .del{background:transparent;border:none;color:#f87171;font-size:12px;padding:4px 6px}
+.stGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.stCard{display:flex;align-items:center;gap:7px;background:var(--card2);border:1px solid var(--line);
+border-radius:11px;padding:9px 10px;font-size:12.5px;color:var(--dim);line-height:1.25}
+.stCard .ico{font-size:16px;flex:0 0 auto}
+.stCard.on{border-color:var(--free);background:#0d3320;color:#c9f5d9;box-shadow:0 0 0 1px var(--free) inset}
+.rowline{display:flex;gap:8px;align-items:center;margin-top:8px}
+.rowline .code{flex:1}
+.qty{display:flex;align-items:center;flex:0 0 auto;background:var(--card2);
+border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.qty button{width:36px;height:40px;background:transparent;border:none;color:var(--txt);font-size:18px}
+.qty input{width:42px;border:none;background:transparent;text-align:center;padding:0;font-size:15px}
+.kind{display:flex;gap:6px;margin-top:9px}
+.kind button{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:9px;
+padding:8px;font-size:12.5px;color:var(--dim)}
+.kind button.on{background:#3a2c0a;border-color:var(--warn);color:#f5c46b}
+.addBtn{width:100%;background:var(--card);border:1px dashed #3a4150;border-radius:12px;
+padding:13px;color:var(--free);font-size:14px;margin-bottom:6px}
+
 .sum{background:linear-gradient(135deg,#0d3320,#12202e);border:1px solid #1f4d33;border-radius:12px;
-padding:14px;margin:16px 0;font-size:14px}
-.sum .row2{display:flex;justify-content:space-between;margin:4px 0;color:#9fe3b8}
-.sum .total{font-size:22px;font-weight:700;color:var(--free)}
+padding:14px;margin:16px 0}
+.sum .row2{display:flex;justify-content:space-between;margin:5px 0;color:#9fe3b8;font-size:14px}
+.sum .row2.big{color:#f5c46b}
+.sum .total{font-size:23px;font-weight:700;color:var(--free)}
+.sum hr{border:none;border-top:1px solid #1f4d33;margin:10px 0}
 .btn{width:100%;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:600;
 background:var(--free);color:#05240f;margin-top:6px}
 .btn:disabled{opacity:.5}
@@ -57,8 +78,8 @@ background:var(--free);color:#05240f;margin-top:6px}
 .s3{background:#08303a;color:var(--cyan)}
 .s4{background:#0d3320;color:var(--free)}
 .s5{background:#262b35;color:var(--dim)}
-.kv{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--dim)}
-.kv b{color:var(--txt);font-weight:500}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--dim);gap:10px}
+.kv b{color:var(--txt);font-weight:500;text-align:right}
 .mono{font-family:ui-monospace,Menlo,monospace;letter-spacing:.5px}
 .steps{display:flex;margin:14px 0 6px}
 .step{flex:1;text-align:center;position:relative;font-size:10px;color:#4a5262}
@@ -86,14 +107,36 @@ background:#252b36;border:1px solid var(--line);color:var(--txt)}
 .err{color:#f87171;font-size:13px;margin-top:10px;max-width:340px;word-break:break-all}
 .toast{position:fixed;left:50%;bottom:34px;transform:translateX(-50%);background:#0d3320;
 border:1px solid #1f4d33;color:#9fe3b8;padding:12px 20px;border-radius:12px;font-size:14px;
-opacity:0;pointer-events:none;transition:.25s;z-index:99}
+opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:86%;text-align:center}
 .toast.show{opacity:1}
 .hide{display:none!important}
+
+.grp{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.grpHead{display:flex;align-items:center;gap:10px;padding:13px;cursor:pointer}
+.grpHead .ico{font-size:18px}
+.grpHead .nm{flex:1;font-size:15px;font-weight:600}
+.grpHead .cnt{font-size:12px;color:var(--free)}
+.grpHead .arw{color:var(--dim);font-size:12px;transition:.2s}
+.grpHead.open .arw{transform:rotate(90deg)}
+.grpBody{border-top:1px solid var(--line);padding:4px 13px 13px}
+.gi{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px dashed #262b35;font-size:13px}
+.gi:last-child{border-bottom:none}
+.gi .cd{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--free);min-width:78px}
+.gi .who{flex:1;min-width:0}
+.gi .who b{display:block;font-size:13px;font-weight:500}
+.gi .who small{color:var(--dim);font-size:11px;font-family:ui-monospace,Menlo,monospace}
+.gi.picked{opacity:.42}
+.gi.picked .cd{color:var(--dim);text-decoration:line-through}
+.gi button{flex:0 0 auto;padding:6px 10px;font-size:11.5px;border-radius:8px;
+background:#252b36;border:1px solid var(--line);color:var(--txt)}
+.gi button.ok{background:#0d3320;border-color:#1f4d33;color:var(--free)}
+.bigTag{font-size:10px;padding:1px 6px;border-radius:999px;background:#3a2c0a;color:var(--warn);margin-left:5px}
+.filters{display:flex;gap:6px;margin-bottom:12px}
+.filters input,.filters select{padding:9px;font-size:13px}
 </style>
 </head>
 <body>
 
-<!-- 注册门 -->
 <div id="gate" class="center hide">
   <h2>📦 快递代拿</h2>
   <p>先登记一下姓名，方便代拿人员联系你</p>
@@ -102,7 +145,6 @@ opacity:0;pointer-events:none;transition:.25s;z-index:99}
   <div class="err" id="gateErr"></div>
 </div>
 
-<!-- 主界面 -->
 <div id="app" class="hide">
   <div class="nav">
     <a href="index.html">🔌 充电桩</a>
@@ -112,7 +154,7 @@ opacity:0;pointer-events:none;transition:.25s;z-index:99}
   <div class="slogan">快递不用自己跑，帮你拿到宿舍楼下，送货上门。</div>
   <div class="pricebar">
     <div><b>1 元/件</b><small>普通快递</small></div>
-    <div><b>2 元/件</b><small>大件/特殊（接单人员确认）</small></div>
+    <div><b>2 元/件</b><small>大件 / 特殊快递</small></div>
   </div>
 
   <div class="tabs">
@@ -121,46 +163,39 @@ opacity:0;pointer-events:none;transition:.25s;z-index:99}
     <button id="t3" onclick="tab(3)">查询订单</button>
   </div>
 
-  <!-- 下单 -->
   <div id="p1">
+    <label style="margin-top:0">快递信息 <span style="color:#5b6478">（可添加多个快递站、多个取件码）</span></label>
+    <div id="itemsWrap"></div>
+    <button class="addBtn" onclick="addItem()">＋ 添加另一个快递</button>
+
     <label>称呼</label>
     <input id="fName" placeholder="怎么称呼你" maxlength="20">
     <label>手机号</label>
     <input id="fPhone" type="tel" inputmode="numeric" placeholder="11 位手机号" maxlength="15">
-    <label>取件码</label>
-    <textarea id="fCodes" placeholder="一个取件码一行，可填多个&#10;例如：&#10;1-2-3456&#10;8-9-0001"></textarea>
-    <div class="hint">支持多个取件码，每行一个</div>
-    <label>快递数量</label>
-    <div class="qty">
-      <button onclick="stepQty(-1)">−</button>
-      <input id="fQty" type="number" inputmode="numeric" value="1" min="1" max="20" oninput="calc()">
-      <button onclick="stepQty(1)">+</button>
-    </div>
     <label>收货地址</label>
     <input id="fAddr" placeholder="宿舍楼栋 + 楼层 + 房间号" maxlength="60">
     <label>备注（选填）</label>
-    <textarea id="fNote" placeholder="放门口 / 到了打电话 / 其他要求" maxlength="100" style="min-height:64px"></textarea>
+    <textarea id="fNote" placeholder="放门口 / 到了打电话 / 其他要求" maxlength="100"></textarea>
 
     <div class="sum">
-      <div class="row2"><span>单价</span><span>¥<span id="sUnit">1.00</span> / 件</span></div>
-      <div class="row2"><span>数量</span><span><span id="sQty">1</span> 件</span></div>
-      <div class="row2" style="margin-top:10px"><span style="color:#e8ecf3">预计费用</span>
-        <span class="total">¥<span id="sTotal">1.00</span></span></div>
+      <div class="row2"><span>普通件</span><span><span id="sNormalQty">0</span> 件 × 1 元 = ¥<span id="sNormalAmt">0</span></span></div>
+      <div class="row2 big"><span>大件</span><span><span id="sBigQty">0</span> 件 × 2 元 = ¥<span id="sBigAmt">0</span></span></div>
+      <hr>
+      <div class="row2" style="margin:0"><span style="color:#e8ecf3">总计</span>
+        <span class="total">¥<span id="sTotal">0</span></span></div>
       <div class="hint" style="color:#7fb894;margin-top:8px">
-        大件或特殊快递由接单人员确认后调整为 2 元/件，调整后会在这里显示最终价。
+        共 <span id="sTotalQty">0</span> 件快递。大件由你自行标记，接单人员核实后如有出入会与你确认。
       </div>
     </div>
     <button class="btn" id="submitBtn" onclick="submitOrder()">提交代拿订单</button>
     <div class="err" id="formErr"></div>
   </div>
 
-  <!-- 我的订单 -->
   <div id="p2" class="hide">
     <div id="myList"><div class="empty">加载中…</div></div>
     <button class="btn ghost" onclick="loadMy()">刷新列表</button>
   </div>
 
-  <!-- 查询订单 -->
   <div id="p3" class="hide">
     <label>手机号</label>
     <input id="qPhone" type="tel" inputmode="numeric" placeholder="下单时填的手机号" maxlength="15">
@@ -173,26 +208,42 @@ opacity:0;pointer-events:none;transition:.25s;z-index:99}
   </div>
 </div>
 
-<!-- 详情 -->
 <div id="detail" class="hide" style="margin-top:6px">
   <button class="btn ghost" onclick="closeDetail()">← 返回</button>
   <div id="detailBody"></div>
 </div>
 
-<!-- 后台 -->
 <div id="admin" class="hide">
   <div class="nav"><a href="index.html">🔌 充电桩</a><span class="on">📦 快递后台</span></div>
   <h1>快递代拿 · 管理</h1>
-  <div class="tabs" style="margin-top:12px">
+
+  <div class="filters" style="margin-top:12px">
     <input id="admKey" placeholder="管理员口令" style="text-align:left">
-    <button class="btn" style="width:88px;margin:0;padding:11px;font-size:14px" onclick="admLoad()">进入</button>
+    <button class="btn" style="width:86px;margin:0;padding:11px;font-size:14px" onclick="admLoad()">进入</button>
   </div>
+
   <div class="stat" id="admStat"></div>
-  <div class="tabs" style="padding:10px">
-    <input id="admDate" type="date" style="text-align:left;padding:9px">
-    <button class="btn" style="width:88px;margin:0;padding:9px;font-size:13px" onclick="admLoad()">筛选</button>
+
+  <div class="filters">
+    <input id="admDate" type="date">
+    <select id="admStatus">
+      <option value="">全部状态</option>
+      <option value="0">待接单</option>
+      <option value="1">已接单</option>
+      <option value="2">取件中</option>
+      <option value="3">配送中</option>
+      <option value="4">已送达</option>
+    </select>
+    <button class="btn" style="width:70px;margin:0;padding:9px;font-size:13px" onclick="admLoad()">筛选</button>
   </div>
-  <div id="admList"></div>
+
+  <div class="tabs">
+    <button id="a1" class="on" onclick="admTab(1)">按快递站分组</button>
+    <button id="a2" onclick="admTab(2)">订单列表</button>
+  </div>
+
+  <div id="admGrouped"></div>
+  <div id="admOrders" class="hide"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -202,9 +253,16 @@ const API = "https://1517412699-356gtpqv4h.ap-guangzhou.tencentscf.com/api";
 const LS_UID = 'cherry_uid', LS_NAME = 'cherry_name', LS_KEY = 'cherry_admin_key';
 const ST_TEXT = ["待接单", "已接单", "取件中", "配送中", "已送达", "已取消"];
 const ST_STEPS = ["待接单", "已接单", "取件中", "配送中", "已送达"];
+const STATIONS = [
+  { name: "妈妈驿站", icon: "🏪" },
+  { name: "江湾校园通快递柜", icon: "📮" },
+  { name: "邻里驿站", icon: "🏠" },
+  { name: "南门邮政综合服务中心", icon: "🏤" },
+];
 
 const $ = (id) => document.getElementById(id);
 const hide = (id, on) => { $(id).classList.toggle('hide', !on); };
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 let seq = 0;
 
 function api(params, timeoutMs) {
@@ -225,51 +283,82 @@ function api(params, timeoutMs) {
     document.head.appendChild(s);
   });
 }
-
 function toast(msg) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-/* ---------- 注册 ---------- */
-async function doRegister() {
-  const v = $('gateName').value.trim();
-  if (!v) { $('gateErr').textContent = '请填写姓名'; return; }
-  $('gateBtn').disabled = true;
-  try {
-    const d = await api({ action: 'register', name: v });
-    if (!d.ok) throw new Error(d.msg || '登记失败');
-    localStorage.setItem(LS_UID, d.id);
-    localStorage.setItem(LS_NAME, d.name);
-    hide('gate', false); hide('app', true);
-    initApp();
-  } catch (e) {
-    $('gateErr').textContent = '❌ ' + e.message;
-  } finally { $('gateBtn').disabled = false; }
+/* ================= 下单：多快递条目 ================= */
+let items = [];
+const MAX_ITEMS = 10;
+function blankItem() { return { station: "", code: "", qty: 1, big: 0 }; }
+
+function addItem() {
+  if (items.length >= MAX_ITEMS) { toast('最多添加 ' + MAX_ITEMS + ' 条'); return; }
+  items.push(blankItem()); renderItems();
+}
+function delItem(i) {
+  items.splice(i, 1);
+  if (!items.length) items.push(blankItem());
+  renderItems(); calc();
+}
+function pickStation(i, name) {
+  items[i].station = name;
+  renderItems();
+}
+function setQty(i, d) {
+  const v = (parseInt(items[i].qty, 10) || 1) + d;
+  items[i].qty = Math.min(20, Math.max(1, v));
+  renderItems(); calc();
+}
+function setQtyInput(i, el) {
+  let v = parseInt(el.value, 10);
+  if (!(v >= 1)) v = 1;
+  if (v > 20) v = 20;
+  items[i].qty = v; calc();
+}
+function setKind(i, big) { items[i].big = big ? 1 : 0; renderItems(); calc(); }
+function setCode(i, el) { items[i].code = el.value; }
+
+function renderItems() {
+  $('itemsWrap').innerHTML = items.map((it, i) => {
+    const g = STATIONS.map((s) =>
+      '<div class="stCard' + (it.station === s.name ? ' on' : '') + '" onclick="pickStation(' + i + ',\'' + s.name + '\')">' +
+      '<span class="ico">' + s.icon + '</span><span>' + s.name + '</span></div>').join('');
+    return '<div class="item">' +
+      '<div class="itemHead"><b>快递 ' + (i + 1) + '</b>' +
+      (items.length > 1 ? '<button class="del" onclick="delItem(' + i + ')">删除</button>' : '') +
+      '</div>' +
+      '<div class="stGrid">' + g + '</div>' +
+      '<div class="rowline">' +
+        '<input class="code" placeholder="取件码（如 123456）" maxlength="30" value="' + esc(it.code) + '" ' +
+               'oninput="setCode(' + i + ',this)">' +
+        '<div class="qty">' +
+          '<button onclick="setQty(' + i + ',-1)">−</button>' +
+          '<input type="number" inputmode="numeric" value="' + it.qty + '" onchange="setQtyInput(' + i + ',this)">' +
+          '<button onclick="setQty(' + i + ',1)">+</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="kind">' +
+        '<button class="' + (it.big ? '' : 'on') + '" onclick="setKind(' + i + ',0)">普通件 1 元</button>' +
+        '<button class="' + (it.big ? 'on' : '') + '" onclick="setKind(' + i + ',1)">大件 2 元</button>' +
+      '</div>' +
+      '</div>';
+  }).join('');
 }
 
-/* ---------- 下单 ---------- */
-function tab(n) {
-  [1, 2, 3].forEach((i) => {
-    $('t' + i).classList.toggle('on', i === n);
-    hide('p' + i, i === n);
-  });
-  hide('detail', false);
-  if (n === 2) loadMy();
-}
-function stepQty(d) {
-  const el = $('fQty');
-  let v = parseInt(el.value, 10) || 1;
-  v = Math.min(20, Math.max(1, v + d));
-  el.value = v; calc();
-}
 function calc() {
-  let q = parseInt($('fQty').value, 10);
-  if (!(q >= 1)) q = 1;
-  if (q > 20) q = 20;
-  $('sQty').textContent = q;
-  $('sUnit').textContent = '1.00';
-  $('sTotal').textContent = (q * 1).toFixed(2);
+  let n = 0, b = 0;
+  items.forEach((it) => {
+    const q = Math.max(1, parseInt(it.qty, 10) || 1);
+    if (it.big) b += q; else n += q;
+  });
+  $('sNormalQty').textContent = n;
+  $('sNormalAmt').textContent = n;
+  $('sBigQty').textContent = b;
+  $('sBigAmt').textContent = b * 2;
+  $('sTotal').textContent = n + b * 2;
+  $('sTotalQty').textContent = n + b;
 }
 
 let submitting = false;
@@ -278,31 +367,34 @@ async function submitOrder() {
   const uid = localStorage.getItem(LS_UID);
   const name = $('fName').value.trim();
   const phone = $('fPhone').value.trim();
-  const codes = $('fCodes').value.trim();
-  const qty = parseInt($('fQty').value, 10) || 1;
   const addr = $('fAddr').value.trim();
   const note = $('fNote').value.trim();
   const err = $('formErr');
   err.textContent = '';
 
+  for (let i = 0; i < items.length; i++) {
+    if (!items[i].station) return (err.textContent = '第 ' + (i + 1) + ' 条：请选择快递站');
+    if (!items[i].code.trim()) return (err.textContent = '第 ' + (i + 1) + ' 条：请填写取件码');
+  }
   if (!name) return (err.textContent = '请填写称呼');
   if (!/^\d{6,15}$/.test(phone)) return (err.textContent = '手机号格式不对');
-  if (!codes) return (err.textContent = '请填写取件码');
-  if (qty < 1 || qty > 20) return (err.textContent = '快递数量需在 1 ~ 20 之间');
   if (!addr) return (err.textContent = '请填写收货地址');
 
   submitting = true;
   $('submitBtn').disabled = true;
   $('submitBtn').textContent = '提交中…';
   try {
+    const payload = items.map((it) => ({ station: it.station, code: it.code.trim(),
+                                         qty: parseInt(it.qty, 10) || 1, big: it.big ? 1 : 0 }));
     const d = await api({ action: 'xcreate', uid: uid, name: name, phone: phone,
-                          codes: codes, qty: qty, addr: addr, note: note });
+                          addr: addr, note: note, items: JSON.stringify(payload) });
     if (!d.ok) {
       if (d.needReg) { localStorage.removeItem(LS_UID); return boot(); }
       throw new Error(d.msg || '提交失败');
     }
-    toast('下单成功，单号 ' + d.no);
-    $('fCodes').value = ''; $('fNote').value = '';
+    toast('下单成功，共 ¥' + d.total + '，单号 ' + d.no);
+    items = [blankItem()]; renderItems(); calc();
+    $('fNote').value = '';
     tab(2);
     setTimeout(() => openDetail(d.no, uid), 400);
   } catch (e) {
@@ -314,36 +406,33 @@ async function submitOrder() {
   }
 }
 
-/* ---------- 我的订单 ---------- */
+/* ================= 我的订单 ================= */
 async function loadMy() {
-  const uid = localStorage.getItem(LS_UID);
   const box = $('myList');
   box.innerHTML = '<div class="empty">加载中…</div>';
   try {
-    const d = await api({ action: 'xlist', uid: uid });
+    const d = await api({ action: 'xlist', uid: localStorage.getItem(LS_UID) });
     if (!d.ok) throw new Error(d.msg || '加载失败');
     if (!d.list.length) { box.innerHTML = '<div class="empty">还没有订单，去下单吧</div>'; return; }
-    box.innerHTML = d.list.map((o) => orderCard(o, true)).join('');
+    box.innerHTML = d.list.map((o) => orderCard(o)).join('');
   } catch (e) {
     box.innerHTML = '<div class="empty">❌ ' + e.message + '</div>';
   }
 }
-
-function orderCard(o, clickable) {
-  const s = o.status;
-  return '<div class="card"' + (clickable ? ' onclick="openDetail(\'' + o.no + '\')"' : '') + '>' +
+function orderCard(o) {
+  const st = (o.items || []).map((i) => i.station).filter((v, i, a) => a.indexOf(v) === i);
+  return '<div class="card" onclick="openDetail(\'' + o.no + '\')">' +
     '<div class="top"><span class="no">' + o.no + '</span>' +
-    '<span class="chip s' + s + '">' + o.statusText + '</span></div>' +
-    '<div class="kv"><span>' + o.qty + ' 件 · ' + o.addr + '</span><b>¥' + Number(o.total).toFixed(2) + '</b></div>' +
-    '<div class="kv"><span>' + o.tText + '</span><span>' + (o.rider ? '代拿：' + o.rider : '') + '</span></div>' +
+    '<span class="chip s' + o.status + '">' + o.statusText + '</span></div>' +
+    '<div class="kv"><span>' + o.itemCount + ' 条 / 共 ' + o.totalQty + ' 件</span>' +
+    '<b style="color:#22c55e">¥' + o.total + '</b></div>' +
+    '<div class="kv"><span style="font-size:12px">' + esc(st.join('、')) + '</span><span>' + o.tText + '</span></div>' +
     '</div>';
 }
 
-/* ---------- 详情 ---------- */
-let currentNo = null;
+/* ================= 详情 ================= */
 async function openDetail(no, uidOverride) {
   const uid = uidOverride || localStorage.getItem(LS_UID);
-  currentNo = no;
   hide('app', false); hide('detail', true);
   $('detailBody').innerHTML = '<div class="empty">加载中…</div>';
   window.scrollTo(0, 0);
@@ -356,148 +445,197 @@ async function openDetail(no, uidOverride) {
   }
 }
 function closeDetail() {
-  hide('detail', false);
-  hide('app', true);
-  if ($('p2') && !$('p2').classList.contains('hide')) loadMy();
+  hide('detail', false); hide('app', true);
+  if (!$('p2').classList.contains('hide')) loadMy();
 }
-
 function detailHtml(o) {
-  const st = o.status;
-  let steps = '';
-  if (st !== 5) {
-    steps = '<div class="steps">' + ST_STEPS.map((t, i) =>
-      '<div class="step' + (i <= st ? ' done' : '') + '"><div class="dot"></div>' + t + '</div>').join('') + '</div>';
-  } else {
-    steps = '<div class="steps"><div class="step done" style="flex:1"><div class="dot"></div>已取消</div></div>';
-  }
-  const codes = (o.codes || []).map((c) => '<span class="mono">' + c + '</span>').join('<br>');
+  const steps = o.status === 5
+    ? '<div class="steps"><div class="step done" style="flex:1"><div class="dot"></div>已取消</div></div>'
+    : '<div class="steps">' + ST_STEPS.map((t, i) =>
+        '<div class="step' + (i <= o.status ? ' done' : '') + '"><div class="dot"></div>' + t + '</div>').join('') + '</div>';
+
+  const itemsHtml = (o.items || []).map((it) => {
+    const s = STATIONS.filter((x) => x.name === it.station)[0];
+    return '<div class="gi' + (it.picked ? ' picked' : '') + '">' +
+      '<div class="cd">' + esc(it.code) + '</div>' +
+      '<div class="who"><b>' + (s ? s.icon + ' ' : '') + esc(it.station) +
+      (it.big ? '<span class="bigTag">大件</span>' : '') +
+      (it.picked ? '<span class="bigTag" style="background:#0d3320;color:#22c55e">已取</span>' : '') +
+      '</b><small>' + it.qty + ' 件 · ¥' + it.amount + '</small></div></div>';
+  }).join('');
+
   return '<div class="card">' +
-    '<div class="top"><span class="no">' + o.no + '</span>' +
-    '<span class="chip s' + st + '">' + o.statusText + '</span></div>' +
+    '<div class="top"><span class="no">' + o.no + '</span><span class="chip s' + o.status + '">' + o.statusText + '</span></div>' +
     steps +
     '<div class="kv"><span>下单时间</span><b>' + o.tText + '</b></div>' +
-    '<div class="kv"><span>快递数量</span><b>' + o.qty + ' 件</b></div>' +
-    '<div class="kv"><span>取件码</span><b style="text-align:right">' + codes + '</b></div>' +
-    '<div class="kv"><span>收货地址</span><b style="text-align:right;max-width:60%">' + o.addr + '</b></div>' +
-    '<div class="kv"><span>联系方式</span><b>' + o.phone + '</b></div>' +
-    (o.note ? '<div class="kv"><span>备注</span><b style="text-align:right;max-width:60%">' + o.note + '</b></div>' : '') +
-    '<div class="kv"><span>单价 × 数量</span><b>¥' + Number(o.unit).toFixed(2) + ' × ' + o.qty + '</b></div>' +
-    '<div class="kv"><span>订单金额</span><b style="color:#22c55e;font-size:16px">¥' + Number(o.total).toFixed(2) + '</b></div>' +
-    (o.rider ? '<div class="kv"><span>代拿人员</span><b>' + o.rider + '</b></div>' : '') +
+    '<div class="kv"><span>收件人</span><b>' + esc(o.name) + '</b></div>' +
+    '<div class="kv"><span>联系电话</span><b>' + esc(o.phone) + '</b></div>' +
+    '<div class="kv"><span>收货地址</span><b>' + esc(o.addr) + '</b></div>' +
+    (o.note ? '<div class="kv"><span>备注</span><b>' + esc(o.note) + '</b></div>' : '') +
+    (o.rider ? '<div class="kv"><span>代拿人员</span><b>' + esc(o.rider) + '</b></div>' : '') +
     '</div>' +
-    (st === 0 || st === 1
-      ? '<button class="btn ghost" onclick="cancelOrder(\'' + o.no + '\')">取消订单</button>'
-      : '') +
-    '<div class="hint" style="margin-top:10px">订单状态更新后，点下方按钮或重新进入即可看到最新进度。</div>' +
+    '<div class="card"><div class="top"><span style="font-size:13px;color:#8b93a7">快递信息（' + o.itemCount + ' 条）</span></div>' +
+    itemsHtml + '</div>' +
+    '<div class="card">' +
+    '<div class="kv"><span>普通件</span><b>' + o.normalQty + ' 件 × 1 元 = ¥' + o.normalQty + '</b></div>' +
+    '<div class="kv"><span>大件</span><b style="color:#f59e0b">' + o.bigQty + ' 件 × 2 元 = ¥' + (o.bigQty * 2) + '</b></div>' +
+    '<div class="kv" style="border-top:1px solid #2a2f3a;margin-top:6px;padding-top:8px">' +
+    '<span>订单金额</span><b style="color:#22c55e;font-size:17px">¥' + o.total + '</b></div></div>' +
+    ((o.status === 0 || o.status === 1)
+      ? '<button class="btn ghost" onclick="cancelOrder(\'' + o.no + '\')">取消订单</button>' : '') +
     '<button class="btn ghost" style="margin-top:8px" onclick="openDetail(\'' + o.no + '\')">刷新状态</button>';
 }
-
 async function cancelOrder(no) {
   if (!confirm('确定取消这个订单吗？')) return;
-  const uid = localStorage.getItem(LS_UID);
   try {
-    const d = await api({ action: 'xcancel', no: no, uid: uid });
+    const d = await api({ action: 'xcancel', no: no, uid: localStorage.getItem(LS_UID) });
     if (!d.ok) { alert(d.msg || '取消失败'); return; }
-    toast('订单已取消');
-    openDetail(no);
+    toast('订单已取消'); openDetail(no);
   } catch (e) { alert('取消失败：' + e.message); }
 }
 
-/* ---------- 查询 ---------- */
+/* ================= 查询 ================= */
 async function queryOrder() {
-  const phone = $('qPhone').value.trim();
-  const no = $('qNo').value.trim();
-  $('queryErr').textContent = '';
-  $('queryResult').innerHTML = '';
+  const phone = $('qPhone').value.trim(), no = $('qNo').value.trim();
+  $('queryErr').textContent = ''; $('queryResult').innerHTML = '';
   if (!phone || !no) { $('queryErr').textContent = '手机号和订单编号都要填'; return; }
   try {
     const d = await api({ action: 'xdetail', no: no, phone: phone });
     if (!d.ok) {
       $('queryErr').textContent = d.msg || '查询失败';
-      if (d.brief) {
-        $('queryResult').innerHTML = orderCard(Object.assign({}, d.brief, { tText: d.brief.tText }), false);
-      }
+      if (d.brief) $('queryResult').innerHTML = orderCard(d.brief);
       return;
     }
     $('queryResult').innerHTML = detailHtml(d.order);
-  } catch (e) {
-    $('queryErr').textContent = '❌ ' + e.message;
-  }
+  } catch (e) { $('queryErr').textContent = '❌ ' + e.message; }
 }
 
-/* ---------- 后台 ---------- */
+/* ================= 后台 ================= */
+let admData = null;
+const openGroups = {};
 function admKeyVal() {
-  let k = $('admKey').value.trim() || localStorage.getItem(LS_KEY) || '';
+  const k = $('admKey').value.trim() || localStorage.getItem(LS_KEY) || '';
   if (k) localStorage.setItem(LS_KEY, k);
   return k;
 }
+function admTab(n) {
+  $('a1').classList.toggle('on', n === 1);
+  $('a2').classList.toggle('on', n === 2);
+  hide('admGrouped', n === 1); hide('admOrders', n === 2);
+}
 async function admLoad() {
   const key = admKeyVal();
-  if (!key) { $('admList').innerHTML = '<div class="empty">请输入口令</div>'; return; }
-  const date = $('admDate').value || '';
-  $('admList').innerHTML = '<div class="empty">加载中…</div>';
+  if (!key) { $('admGrouped').innerHTML = '<div class="empty">请输入口令</div>'; return; }
+  $('admGrouped').innerHTML = '<div class="empty">加载中…</div>';
   try {
-    const d = await api({ action: 'xadmin', key: key, date: date });
-    if (!d.ok) { $('admList').innerHTML = '<div class="empty">❌ ' + (d.msg || '口令不对') + '</div>'; return; }
-    renderAdm(d);
-  } catch (e) { $('admList').innerHTML = '<div class="empty">❌ ' + e.message + '</div>'; }
+    const d = await api({ action: 'xadmin', key: key,
+                          date: $('admDate').value || '', status: $('admStatus').value || '' });
+    if (!d.ok) { $('admGrouped').innerHTML = '<div class="empty">❌ ' + (d.msg || '口令不对') + '</div>'; return; }
+    admData = d; renderAdm();
+  } catch (e) { $('admGrouped').innerHTML = '<div class="empty">❌ ' + e.message + '</div>'; }
 }
-function renderAdm(d) {
-  const s = d.stats;
+function renderAdm() {
+  const d = admData, s = d.stats;
   $('admStat').innerHTML =
+    '<div><b style="color:#f59e0b">' + s.pendingItems + '</b><small>待取快递（件）</small></div>' +
     '<div><b style="color:#f59e0b">' + s.pending + '</b><small>待接单</small></div>' +
-    '<div><b style="color:#3b82f6">' + s.running + '</b><small>进行中</small></div>' +
-    '<div><b>' + s.todayCount + '</b><small>今日订单</small></div>' +
-    '<div><b style="color:#22c55e">¥' + s.todayRevenue.toFixed(2) + '</b><small>今日营业额</small></div>';
-  if (!d.list.length) { $('admList').innerHTML = '<div class="empty">' + d.day + ' 没有订单</div>'; return; }
+    '<div><b>' + s.dayCount + '</b><small>' + d.day + ' 订单</small></div>' +
+    '<div><b style="color:#22c55e">¥' + s.dayRevenue + '</b><small>' + d.day + ' 营业额</small></div>';
 
-  let h = '<div class="hint" style="margin:6px 0 10px">' + d.day + ' · 共 ' + s.dayCount +
-          ' 单 · 已送达收入 ¥' + s.dayRevenue.toFixed(2) + '</div>';
-  for (const o of d.list) {
-    h += '<div class="card">' +
-      '<div class="top"><span class="no">' + o.no + '</span><span class="chip s' + o.status + '">' + o.statusText + '</span></div>' +
-      '<div class="kv"><span>' + o.name + ' · ' + o.phone + '</span><b>' + o.tText + '</b></div>' +
-      '<div class="kv"><span>取件码</span><b class="mono">' + (o.codes || []).join(' / ') + '</b></div>' +
-      '<div class="kv"><span>地址</span><b style="max-width:60%;text-align:right">' + o.addr + '</b></div>' +
-      (o.note ? '<div class="kv"><span>备注</span><b style="max-width:60%;text-align:right">' + o.note + '</b></div>' : '') +
-      '<div class="kv"><span>' + o.qty + ' 件 × ¥' + Number(o.unit).toFixed(2) + '</span><b>¥' + Number(o.total).toFixed(2) + '</b></div>' +
-      '<div class="acts">';
-    const nexts = [[1, '接单'], [2, '取件中'], [3, '配送中'], [4, '已送达']];
-    for (const [st, label] of nexts) {
-      if (o.status < st) h += '<button class="go" onclick="setSt(\'' + o.no + '\',' + st + ')">' + label + '</button>';
+  let h = '';
+  const has = d.groups.filter((g) => g.items.length);
+  if (!has.length) h = '<div class="empty">' + d.day + ' 没有待取快递</div>';
+  else {
+    h = '<div class="hint" style="margin:0 0 10px">按快递站汇总，共 ' + s.pendingItems +
+        ' 件待取。点标题展开/折叠，取到一件勾一件。</div>';
+    for (const g of d.groups) {
+      const st = STATIONS.filter((x) => x.name === g.station)[0] || { icon: '📦' };
+      const isOpen = openGroups[g.station] !== false;
+      const rows = g.items.map((it) =>
+        '<div class="gi' + (it.picked ? ' picked' : '') + '">' +
+        '<div class="cd">' + esc(it.code) + '</div>' +
+        '<div class="who"><b>' + esc(it.name) + (it.big ? '<span class="bigTag">大件</span>' : '') + '</b>' +
+        '<small>' + esc(it.no) + ' · ' + it.qty + '件</small></div>' +
+        '<button class="' + (it.picked ? 'ok' : '') + '" onclick="markPick(\'' + it.no + '\',\'' + it.iid + '\',' + (it.picked ? 0 : 1) + ')">' +
+        (it.picked ? '已取' : '标记已取') + '</button></div>').join('');
+      h += '<div class="grp"><div class="grpHead' + (isOpen ? ' open' : '') + '" onclick="toggleGroup(\'' + g.station + '\')">' +
+        '<span class="ico">' + st.icon + '</span><span class="nm">' + g.station + '</span>' +
+        '<span class="cnt">' + g.qty + ' 件 / ' + g.count + ' 条</span><span class="arw">▶</span></div>' +
+        (isOpen ? '<div class="grpBody">' + rows + '</div>' : '') + '</div>';
     }
-    h += '<button onclick="setPrice(\'' + o.no + '\',' + (o.unit === 1 ? 2 : 1) + ')">改为 ' + (o.unit === 1 ? '2' : '1') + ' 元/件</button>';
-    if (o.status < 4) h += '<button class="bad" onclick="setSt(\'' + o.no + '\',5)">取消</button>';
-    h += '</div></div>';
   }
-  $('admList').innerHTML = h;
+  $('admGrouped').innerHTML = h;
+
+  const list = d.list;
+  if (!list.length) { $('admOrders').innerHTML = '<div class="empty">' + d.day + ' 没有订单</div>'; return; }
+  $('admOrders').innerHTML = list.map((o) => {
+    const its = (o.items || []).map((it) =>
+      '<div class="kv"><span>' + esc(it.station) + (it.big ? ' · 大件' : '') +
+      (it.picked ? ' · <span style="color:#22c55e">已取</span>' : '') + '</span>' +
+      '<b class="mono">' + esc(it.code) + ' ×' + it.qty + '</b></div>').join('');
+    let acts = '<div class="acts">';
+    [[1, '接单'], [2, '取件中'], [3, '配送中'], [4, '已送达']].forEach(([st, label]) => {
+      if (o.status < st) acts += '<button class="go" onclick="setSt(\'' + o.no + '\',' + st + ')">' + label + '</button>';
+    });
+    if (o.status < 4) acts += '<button class="bad" onclick="setSt(\'' + o.no + '\',5)">取消</button>';
+    acts += '</div>';
+    return '<div class="card">' +
+      '<div class="top"><span class="no">' + o.no + '</span><span class="chip s' + o.status + '">' + o.statusText + '</span></div>' +
+      '<div class="kv"><span>' + esc(o.name) + ' · ' + esc(o.phone) + '</span><b>' + o.tText + '</b></div>' +
+      '<div class="kv"><span>地址</span><b style="max-width:62%">' + esc(o.addr) + '</b></div>' +
+      (o.note ? '<div class="kv"><span>备注</span><b style="max-width:62%">' + esc(o.note) + '</b></div>' : '') +
+      '<div style="border-top:1px solid #2a2f3a;margin:8px 0"></div>' + its +
+      '<div class="kv" style="margin-top:6px"><span>合计 ' + o.totalQty + ' 件</span>' +
+      '<b style="color:#22c55e">¥' + o.total + '</b></div>' + acts + '</div>';
+  }).join('');
+}
+function toggleGroup(name) {
+  openGroups[name] = openGroups[name] === false ? true : false;
+  renderAdm();
+}
+async function markPick(no, iid, picked) {
+  try {
+    const d = await api({ action: 'xpick', key: admKeyVal(), no: no, iid: iid, picked: picked });
+    if (!d.ok) { alert(d.msg || '操作失败'); return; }
+    await admLoad();
+    if (d.allPicked) toast('该订单所有快递已取齐，可以安排配送了');
+  } catch (e) { alert('操作失败：' + e.message); }
 }
 async function setSt(no, st) {
-  const key = admKeyVal();
   let rider = '';
   if (st === 1) rider = prompt('接单人员姓名（可留空）', '') || '';
   try {
-    const d = await api({ action: 'xstatus', key: key, no: no, status: st, rider: rider });
+    const d = await api({ action: 'xstatus', key: admKeyVal(), no: no, status: st, rider: rider });
     if (!d.ok) { alert(d.msg || '操作失败'); return; }
     toast('已更新为「' + d.statusText + '」');
     admLoad();
   } catch (e) { alert('操作失败：' + e.message); }
 }
-async function setPrice(no, unit) {
-  const key = admKeyVal();
-  try {
-    const d = await api({ action: 'xprice', key: key, no: no, unit: unit });
-    if (!d.ok) { alert(d.msg || '改价失败'); return; }
-    toast('已改为 ¥' + d.unit + '/件，合计 ¥' + d.total.toFixed(2));
-    admLoad();
-  } catch (e) { alert('改价失败：' + e.message); }
-}
 
-/* ---------- 启动 ---------- */
+/* ================= 启动 ================= */
+function tab(n) {
+  [1, 2, 3].forEach((i) => { $('t' + i).classList.toggle('on', i === n); hide('p' + i, i === n); });
+  hide('detail', false);
+  if (n === 2) loadMy();
+}
+function doRegister() {
+  const v = $('gateName').value.trim();
+  if (!v) { $('gateErr').textContent = '请填写姓名'; return; }
+  $('gateBtn').disabled = true;
+  api({ action: 'register', name: v }).then((d) => {
+    if (!d.ok) throw new Error(d.msg || '登记失败');
+    localStorage.setItem(LS_UID, d.id);
+    localStorage.setItem(LS_NAME, d.name);
+    hide('gate', false); hide('app', true);
+    initApp();
+  }).catch((e) => { $('gateErr').textContent = '❌ ' + e.message; })
+    .finally(() => { $('gateBtn').disabled = false; });
+}
 function initApp() {
   hide('app', true);
   $('fName').value = localStorage.getItem(LS_NAME) || '';
-  calc();
+  if (!items.length) items = [blankItem()];
+  renderItems(); calc();
   tab(1);
 }
 function boot() {
@@ -505,15 +643,14 @@ function boot() {
     hide('app', false); hide('gate', false); hide('admin', true);
     document.title = '快递代拿 · 管理';
     $('admDate').value = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+    admTab(1);
     if (localStorage.getItem(LS_KEY)) admLoad();
     return;
   }
   hide('admin', false);
-  const uid = localStorage.getItem(LS_UID);
-  if (!uid) { hide('app', false); hide('gate', true); return; }
+  if (!localStorage.getItem(LS_UID)) { hide('app', false); hide('gate', true); return; }
   hide('gate', false);
   initApp();
-  // 支持 ?no=xxx 直达详情
   const m = location.search.match(/[?&]no=([A-Za-z0-9]+)/);
   if (m) openDetail(m[1]);
 }
