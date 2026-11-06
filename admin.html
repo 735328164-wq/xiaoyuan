@@ -113,6 +113,7 @@ padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;poi
     <button id="t5" onclick="tab(5)">订单指派</button>
     <button id="t6" onclick="tab(6)">参数</button>
     <button id="t7" onclick="tab(7)">异常订单</button>
+    <button id="t8" onclick="tab(8)">招募审核</button>
   </div>
 
   <div id="p1"></div>
@@ -122,6 +123,7 @@ padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;poi
   <div id="p5" class="hide"></div>
   <div id="p6" class="hide"></div>
   <div id="p7" class="hide"></div>
+  <div id="p8" class="hide"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -185,7 +187,7 @@ function setRange(mode) {
 
 function tab(n) {
   CUR_TAB = n;
-  for (let i = 1; i <= 7; i++) {
+  for (let i = 1; i <= 8; i++) {
     const el = $('t' + i), pe = $('p' + i);
     if (el) el.classList.toggle('on', i === n);
     if (pe) pe.classList.toggle('hide', i !== n);
@@ -196,6 +198,7 @@ function tab(n) {
   if (n === 5) loadOrders($('dTo').value || today());
   if (n === 6) loadCfg();
   if (n === 7) loadIssues();
+  if (n === 8) loadJoin();
 }
 
 async function loadAll() {
@@ -328,6 +331,99 @@ async function bindRider(rid) {
   if (!d.ok) return toast(d.msg);
   toast(uid.trim() ? '已绑定' : '已解绑');
   loadRiders();
+}
+
+/* ---------------- 招募与审核 ---------------- */
+let JOIN = { wxId: '', hasQr: false };
+
+async function loadJoin() {
+  const [page, apps] = await Promise.all([call('bizRiderPage'), call('bizApps')]);
+  JOIN = { wxId: page.wxId || '', hasQr: !!page.hasQr };
+  const list = apps.list || [];
+  const pending = list.filter((x) => x.status === 0);
+  const others = list.filter((x) => x.status !== 0);
+
+  const row = (x) => {
+    const st = x.status === 0 ? '<span class="tag t-wait">待审核</span>'
+      : x.status === 1 ? '<span class="tag t-ok">已通过</span>'
+      : '<span class="tag t-off">已拒绝</span>';
+    return '<tr><td>' + esc(x.name) + '</td><td>' + esc(x.phone) + '</td>' +
+      '<td>' + esc(x.note || '-') + '</td>' +
+      '<td class="mono">' + esc(x.uid.slice(0, 10)) + '…</td>' +
+      '<td>' + x.atText + '</td><td>' + st + '</td>' +
+      '<td>' + (x.status === 0
+        ? '<button class="btn sm" onclick="approveApp(\'' + x.uid + '\')">通过并开通</button> ' +
+          '<button class="btn sm danger" onclick="rejectApp(\'' + x.uid + '\')">拒绝</button>'
+        : (x.status === 1 ? '<span style="color:var(--ok)">已绑定 ' + esc(x.bound || x.name) + '</span>' : '')) +
+      '</td></tr>';
+  };
+
+  $('p8').innerHTML =
+    '<div class="card"><h3>招募设置</h3>' +
+      '<div class="row">' +
+        '<div style="flex:2"><label>管理员微信号（用户可一键复制）</label>' +
+          '<input id="joinWx" value="' + esc(JOIN.wxId) + '" placeholder="例如：leon_wechat"></div>' +
+        '<div style="flex:0 0 auto"><button class="btn" onclick="saveJoinWx()">保存微信号</button></div>' +
+      '</div>' +
+      '<div class="row" style="margin-top:18px;align-items:center">' +
+        '<div style="flex:0 0 auto;text-align:center">' +
+          (JOIN.hasQr
+            ? '<img src="' + API + '?action=riderQr&_=' + Date.now() + '" style="width:140px;border-radius:12px;border:1px solid var(--line)">'
+            : '<div style="width:140px;height:170px;border:1px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:12px">未上传</div>') +
+        '</div>' +
+        '<div style="flex:1"><label>管理员微信二维码</label>' +
+          '<button class="btn sec" onclick="pickJoinQr()">上传 / 更换二维码</button>' +
+          '<div class="hint">建议上传微信「我的二维码」截图，用户长按可保存</div></div>' +
+      '</div>' +
+      '<input type="file" id="joinQrFile" accept="image/*" style="display:none" onchange="onJoinQr(this)">' +
+    '</div>' +
+    '<div class="card"><h3>待审核申请（' + pending.length + '）</h3>' +
+      (pending.length
+        ? '<table><thead><tr><th>称呼</th><th>手机号</th><th>说明</th><th>用户ID</th><th>提交时间</th><th>状态</th><th>操作</th></tr></thead><tbody>' +
+          pending.map(row).join('') + '</tbody></table>'
+        : '<div class="empty">没有待审核的申请</div>') +
+      '<div class="hint">「通过并开通」会立即为该用户创建配送员身份，他刷新小程序即可看到工作台。</div></div>' +
+    (others.length
+      ? '<div class="card"><h3>历史申请</h3><table><thead><tr><th>称呼</th><th>手机号</th><th>说明</th><th>用户ID</th><th>提交时间</th><th>状态</th><th>操作</th></tr></thead><tbody>' +
+        others.map(row).join('') + '</tbody></table></div>'
+      : '');
+}
+
+async function saveJoinWx() {
+  const d = await call('bizRiderPage', { save: 1, wxId: $('joinWx').value.trim() });
+  if (!d.ok) return toast(d.msg);
+  toast('微信号已保存'); loadJoin();
+}
+
+function pickJoinQr() { $('joinQrFile').value = ''; $('joinQrFile').click(); }
+
+async function onJoinQr(el) {
+  const f = el.files && el.files[0];
+  if (!f) return;
+  toast('上传中…');
+  try {
+    const data = await compressImage(f, 800);
+    const body = new URLSearchParams();
+    body.append('type', 'rider');
+    body.append('data', data);
+    await fetch(API + '?action=setqr&key=' + encodeURIComponent(KEY),
+                { method: 'POST', mode: 'no-cors', body });
+    await new Promise((r) => setTimeout(r, 1500));
+    toast('二维码已更新'); loadJoin();
+  } catch (e) { toast('上传失败：' + e.message); }
+}
+
+async function approveApp(uid) {
+  if (!confirm('通过该申请并立即开通配送权限？')) return;
+  const d = await call('bizApprove', { uid });
+  if (!d.ok) return toast(d.msg);
+  toast('已开通：' + d.name); loadJoin(); loadRiders();
+}
+async function rejectApp(uid) {
+  if (!confirm('拒绝该申请？')) return;
+  const d = await call('bizReject', { uid });
+  if (!d.ok) return toast(d.msg);
+  toast('已拒绝'); loadJoin();
 }
 
 /* ---------------- 异常订单 ---------------- */
