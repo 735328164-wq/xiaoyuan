@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>校小二 · 经营管理</title>
+<style>
+:root{--bg:#F7F5F0;--card:#fff;--bg2:#F2EFE8;--brand:#E88A42;--brand-press:#CF7135;
+--brand-soft:#FFF0E2;--txt:#302F2B;--txt2:#77766F;--txt3:#A6A39A;--line:#EAE5DC;
+--ok:#287A50;--ok-bg:#E8F3EC;--warn:#A66A20;--warn-bg:#FFF2DE;--err:#C44D43;--err-bg:#FBEAE7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+input,select,button,textarea{font-family:inherit;font-size:14px}
+input,select,textarea{width:100%;height:38px;border:1px solid var(--line);border-radius:10px;
+padding:0 12px;background:#fff;color:var(--txt);outline:none}
+textarea{height:auto;padding:10px 12px;min-height:64px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+label{display:block;font-size:12px;color:var(--txt2);margin-bottom:6px}
+.btn{height:38px;padding:0 18px;border:none;border-radius:10px;background:var(--brand);color:#fff;
+font-weight:600;cursor:pointer}
+.btn:active{background:var(--brand-press)}
+.btn.sec{background:#fff;color:var(--txt);border:1px solid var(--line);font-weight:400}
+.btn.sm{height:30px;padding:0 12px;font-size:12px;border-radius:8px}
+.btn.danger{background:var(--err-bg);color:var(--err);border:1px solid #F0CFCB}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
+.gate{max-width:380px;margin:14vh auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px}
+.gate h1{font-size:20px;margin:0 0 6px}
+.gate p{color:var(--txt2);font-size:13px;margin:0 0 20px}
+.head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.head h1{font-size:22px;margin:0}
+.head .sub{font-size:12px;color:var(--txt3);margin-top:2px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar input[type=date]{width:auto}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:#fff;border-radius:14px;padding:16px}
+.stat .lb{font-size:12px;color:var(--txt2);margin-bottom:8px}
+.stat .v{font-size:26px;font-weight:700;line-height:1.1}
+.stat .u{font-size:12px;color:var(--txt3);font-weight:400;margin-left:4px}
+.v-brand{color:var(--brand)} .v-ok{color:var(--ok)} .v-err{color:var(--err)} .v-warn{color:var(--warn)}
+.tabs{display:flex;gap:6px;margin-bottom:16px;background:#fff;border-radius:12px;padding:5px;width:fit-content}
+.tabs button{border:none;background:transparent;color:var(--txt2);padding:8px 18px;border-radius:9px;cursor:pointer}
+.tabs button.on{background:var(--brand-soft);color:var(--brand-press);font-weight:600}
+.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px}
+.card h3{font-size:15px;margin:0 0 14px;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--txt2);font-weight:400;font-size:12px;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;font-size:12px;padding:2px 10px;border-radius:999px}
+.t-wait{background:var(--warn-bg);color:var(--warn)}
+.t-doing{background:var(--brand-soft);color:var(--brand-press)}
+.t-ok{background:var(--ok-bg);color:var(--ok)}
+.t-off{background:var(--bg2);color:var(--txt3)}
+.t-err{background:var(--err-bg);color:var(--err)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mono{font-family:Menlo,Consolas,monospace;font-size:12px;color:var(--txt3)}
+.bars{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px}
+.bars .b{flex:1;background:var(--brand-soft);border-radius:6px 6px 0 0;position:relative;min-height:2px}
+.bars .b span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:10px;color:var(--txt3)}
+.empty{text-align:center;color:var(--txt3);padding:40px 0;font-size:13px}
+.hint{font-size:12px;color:var(--txt3);margin-top:10px}
+.warn-box{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.row>div{flex:1;min-width:120px}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#302F2B;color:#fff;
+padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- 口令 -->
+<div id="gate" class="gate">
+  <h1>校小二 · 经营管理</h1>
+  <p>请输入管理员口令</p>
+  <label>口令</label>
+  <input id="keyInput" type="password" placeholder="ADMIN_KEY">
+  <div style="height:14px"></div>
+  <button class="btn" style="width:100%" onclick="login()">进入</button>
+  <div class="hint" id="gateErr" style="color:var(--err)"></div>
+</div>
+
+<!-- 主体 -->
+<div id="main" class="wrap hide">
+  <div class="head">
+    <div>
+      <h1>经营管理</h1>
+      <div class="sub" id="rangeLabel">—</div>
+    </div>
+    <div class="bar">
+      <input id="dFrom" type="date">
+      <span style="color:var(--txt3)">—</span>
+      <input id="dTo" type="date">
+      <button class="btn sec" onclick="setRange('day')">今日</button>
+      <button class="btn sec" onclick="setRange('week')">本周</button>
+      <button class="btn sec" onclick="setRange('month')">本月</button>
+      <button class="btn" onclick="loadAll()">刷新</button>
+    </div>
+  </div>
+
+  <div id="warnBox"></div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="tabs">
+    <button id="t1" class="on" onclick="tab(1)">总览分析</button>
+    <button id="t2" onclick="tab(2)">配送员</button>
+    <button id="t3" onclick="tab(3)">成本记录</button>
+    <button id="t4" onclick="tab(4)">结算</button>
+    <button id="t5" onclick="tab(5)">订单指派</button>
+    <button id="t6" onclick="tab(6)">参数</button>
+  </div>
+
+  <div id="p1"></div>
+  <div id="p2" class="hide"></div>
+  <div id="p3" class="hide"></div>
+  <div id="p4" class="hide"></div>
+  <div id="p5" class="hide"></div>
+  <div id="p6" class="hide"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://1517412699-356gtpqv4h.ap-guangzhou.tencentscf.com/api';
+let KEY = localStorage.getItem('biz_key') || '';
+let seq = 0, S = null, RIDERS = [], CFG = null, CUR_TAB = 1;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g,
+  (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const money = (n) => '¥' + (Math.round((Number(n) || 0) * 100) / 100).toFixed(2);
+const today = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+
+function api(params) {
+  return new Promise((resolve, reject) => {
+    const cb = 'cb' + (++seq) + Date.now();
+    const s = document.createElement('script');
+    const qs = Object.keys(params).map((k) => k + '=' + encodeURIComponent(params[k] == null ? '' : params[k])).join('&');
+    const t = setTimeout(() => { cleanup(); reject(new Error('请求超时')); }, 20000);
+    function cleanup() { clearTimeout(t); try { delete window[cb]; } catch (e) { window[cb] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+    window[cb] = (d) => { cleanup(); resolve(d); };
+    s.onerror = () => { cleanup(); reject(new Error('网络错误')); };
+    s.src = API + '?' + qs + '&callback=' + cb + '&_=' + Date.now();
+    document.head.appendChild(s);
+  });
+}
+function call(action, extra) {
+  return api(Object.assign({ action, key: KEY }, extra || {}));
+}
+function toast(m) {
+  const t = $('toast'); t.textContent = m; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function login() {
+  const k = $('keyInput').value.trim();
+  if (!k) return;
+  KEY = k;
+  call('bizStats', { from: today(), to: today() }).then((d) => {
+    if (!d.ok) { $('gateErr').textContent = d.msg || '口令不对'; return; }
+    localStorage.setItem('biz_key', k);
+    $('gate').classList.add('hide');
+    $('main').classList.remove('hide');
+    setRange('month');
+  }).catch((e) => { $('gateErr').textContent = e.message; });
+}
+
+function setRange(mode) {
+  const d = new Date(Date.now() + 8 * 3600e3);
+  const p = (n) => String(n).padStart(2, '0');
+  const fmt = (x) => x.getUTCFullYear() + '-' + p(x.getUTCMonth() + 1) + '-' + p(x.getUTCDate());
+  const to = fmt(d);
+  let from = to;
+  if (mode === 'week') { const x = new Date(d); x.setUTCDate(x.getUTCDate() - 6); from = fmt(x); }
+  if (mode === 'month') { from = d.getUTCFullYear() + '-' + p(d.getUTCMonth() + 1) + '-01'; }
+  $('dFrom').value = from; $('dTo').value = to;
+  loadAll();
+}
+
+function tab(n) {
+  CUR_TAB = n;
+  for (let i = 1; i <= 6; i++) {
+    $('t' + i).classList.toggle('on', i === n);
+    $('p' + i).classList.toggle('hide', i !== n);
+  }
+  if (n === 2) loadRiders();
+  if (n === 3) loadCosts();
+  if (n === 4) loadSettles();
+  if (n === 5) loadOrders($('dTo').value || today());
+  if (n === 6) loadCfg();
+}
+
+async function loadAll() {
+  if (!KEY) return;
+  const from = $('dFrom').value || today();
+  const to = $('dTo').value || from;
+  $('rangeLabel').textContent = from + ' 至 ' + to;
+  try {
+    const [s, r] = await Promise.all([
+      call('bizStats', { from, to }),
+      call('bizRiders')
+    ]);
+    if (!s.ok) { toast(s.msg || '加载失败'); return; }
+    S = s; RIDERS = r.list || []; CFG = s.config;
+    renderStats(); renderOverview();
+    if (CUR_TAB === 2) renderRiders();
+    if (CUR_TAB === 3) loadCosts();
+    if (CUR_TAB === 4) loadSettles();
+    if (CUR_TAB === 5) loadOrders(to);
+    if (CUR_TAB === 6) renderCfg();
+  } catch (e) { toast(e.message); }
+}
+
+/* ---------------- 总览 ---------------- */
+function renderStats() {
+  const s = S;
+  const cards = [
+    ['营业收入', money(s.revenue.total), 'v-brand', s.days + ' 天'],
+    ['配送成本', money(s.cost.delivery), 'v-warn', '报酬支出'],
+    ['其他成本', money(s.cost.fee + s.cost.other + s.cost.fixed), 'v-warn', '手续费+其他+固定'],
+    ['经营利润', money(s.profit), s.profit >= 0 ? 'v-ok' : 'v-err', '收入−成本'],
+    ['完成订单', s.orders.done + ' 单', 'v-brand', '已送达'],
+    ['配送件数', s.orders.totalQty + ' 件', 'v-brand', '普通 ' + s.orders.normalQty + ' / 大件 ' + s.orders.bigQty],
+    ['平均每单', s.analysis.avgQtyPerOrder + ' 件', '', '每单件数'],
+    ['每件利润', money(s.analysis.profitPerQty), s.analysis.profitPerQty >= 0 ? 'v-ok' : 'v-err', '贡献利润'],
+  ];
+  $('stats').innerHTML = cards.map(([lb, v, cls, u]) =>
+    '<div class="stat"><div class="lb">' + lb + '</div>' +
+    '<div class="v ' + cls + '">' + v + '<span class="u">' + u + '</span></div></div>').join('');
+
+  $('warnBox').innerHTML = s.revenue.unconfirmedCount
+    ? '<div class="warn-box">⚠ 有 <b>' + s.revenue.unconfirmedCount + '</b> 单已送达但<b>未确认收款</b>，合计 ' +
+      money(s.revenue.unconfirmed) + '，这部分<b>不计入营业收入</b>。<br>' +
+      '请到「快递后台 → 支付核对」确认到账后，收入才会进账。</div>'
+    : '';
+}
+
+function renderOverview() {
+  const s = S, a = s.analysis;
+  const maxQty = Math.max(1, ...a.daily.map((d) => d.qty));
+
+  const bars = a.daily.length
+    ? '<div class="bars">' + a.daily.map((d) =>
+        '<div class="b" style="height:' + Math.max(2, d.qty / maxQty * 100) + '%" title="' + d.date + ' ' + d.qty + '件">' +
+        '<span>' + d.date.slice(5) + '</span></div>').join('') + '</div><div style="height:24px"></div>'
+    : '<div class="empty">该区间没有配送记录</div>';
+
+  const table = (title, rows, cols) =>
+    '<div class="card"><h3>' + title + '</h3>' +
+    (rows.length ? '<table><thead><tr>' + cols.map((c) => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>' +
+      rows.join('') + '</tbody></table>' : '<div class="empty">暂无数据</div>') + '</div>';
+
+  const stationRows = a.station.map((x) =>
+    '<tr><td>' + esc(x.name) + '</td><td>' + x.qty + ' 件</td><td>' + x.count + ' 条</td></tr>');
+  const areaRows = a.area.map((x) =>
+    '<tr><td>' + esc(x.name) + '</td><td>' + x.qty + ' 件</td><td>' + x.count + ' 单</td></tr>');
+  const riderRows = a.riders.map((x) =>
+    '<tr><td>' + esc(x.name) + '</td><td>' + x.orders + ' 单</td><td>' + x.normalQty + ' / ' + x.bigQty +
+    '</td><td>' + money(x.pay) + '</td></tr>');
+
+  $('p1').innerHTML =
+    '<div class="card"><h3>每日配送件数</h3>' + bars + '</div>' +
+    '<div class="grid2">' +
+      table('各快递站', stationRows, ['快递站', '件数', '条目']) +
+      table('各宿舍区域', areaRows, ['区域', '件数', '订单']) +
+    '</div>' +
+    table('配送员产出', riderRows, ['配送员', '订单', '普通/大件', '报酬']) +
+    '<div class="card"><h3>成本构成</h3><table><tbody>' +
+      '<tr><td>配送报酬</td><td style="text-align:right">' + money(s.cost.delivery) + '</td></tr>' +
+      '<tr><td>支付手续费（' + (CFG.feeRate * 100) + '%）</td><td style="text-align:right">' + money(s.cost.fee) + '</td></tr>' +
+      '<tr><td>推广 / 售后 / 其他</td><td style="text-align:right">' + money(s.cost.other) + '</td></tr>' +
+      '<tr><td>固定费用（按天摊）</td><td style="text-align:right">' + money(s.cost.fixed) + '</td></tr>' +
+      '<tr><td><b>成本合计</b></td><td style="text-align:right"><b>' + money(s.cost.total) + '</b></td></tr>' +
+      '<tr><td><b>经营利润</b></td><td style="text-align:right"><b style="color:' +
+        (s.profit >= 0 ? 'var(--ok)' : 'var(--err)') + '">' + money(s.profit) + '</b></td></tr>' +
+    '</tbody></table></div>' +
+    '<div class="card"><h3>用户指标</h3><table><tbody>' +
+      '<tr><td>新用户</td><td style="text-align:right">' + a.newUsers + ' 人</td></tr>' +
+      '<tr><td>下单用户</td><td style="text-align:right">' + a.buyers + ' 人</td></tr>' +
+      '<tr><td>复购用户（≥2 单）</td><td style="text-align:right">' + a.repeat + ' 人 · ' + a.repeatRate + '%</td></tr>' +
+      '<tr><td>每件配送成本</td><td style="text-align:right">' + money(a.costPerQty) + '</td></tr>' +
+    '</tbody></table></div>';
+}
+
+/* ---------------- 配送员 ---------------- */
+async function loadRiders() {
+  const r = await call('bizRiders');
+  RIDERS = r.list || [];
+  renderRiders();
+}
+function renderRiders() {
+  const rows = RIDERS.map((x) =>
+    '<tr><td>' + esc(x.name) + '</td><td>' + esc(x.phone || '-') + '</td>' +
+    '<td>' + (x.on ? '<span class="tag t-ok">在职</span>' : '<span class="tag t-off">停用</span>') + '</td>' +
+    '<td class="mono">' + x.rid + '</td>' +
+    '<td><button class="btn sm sec" onclick="editRider(\'' + x.rid + '\')">编辑</button> ' +
+    (x.on ? '<button class="btn sm danger" onclick="delRider(\'' + x.rid + '\')">停用</button>' : '') +
+    '</td></tr>').join('');
+
+  $('p2').innerHTML =
+    '<div class="card"><h3>新增配送员</h3><div class="row">' +
+      '<div><label>姓名</label><input id="rName" placeholder="张三"></div>' +
+      '<div><label>手机号</label><input id="rPhone" placeholder="选填"></div>' +
+      '<div><label>备注</label><input id="rNote" placeholder="选填"></div>' +
+      '<div style="flex:0 0 auto"><button class="btn" onclick="saveRider()">添加</button></div>' +
+    '</div></div>' +
+    '<div class="card"><h3>配送员列表（' + RIDERS.length + '）</h3>' +
+    (RIDERS.length ? '<table><thead><tr><th>姓名</th><th>电话</th><th>状态</th><th>ID</th><th>操作</th></tr></thead><tbody>' +
+      rows + '</tbody></table>' : '<div class="empty">还没有配送员</div>') + '</div>';
+}
+async function saveRider() {
+  const name = $('rName').value.trim();
+  if (!name) return toast('请填姓名');
+  const d = await call('bizRiderSave', { name, phone: $('rPhone').value.trim(), note: $('rNote').value.trim() });
+  if (!d.ok) return toast(d.msg);
+  toast('已添加'); loadRiders();
+}
+function editRider(rid) {
+  const x = RIDERS.filter((r) => r.rid === rid)[0];
+  const name = prompt('姓名', x.name); if (name === null) return;
+  const phone = prompt('手机号', x.phone || ''); if (phone === null) return;
+  call('bizRiderSave', { rid, name, phone, note: x.note || '' }).then((d) => {
+    if (!d.ok) return toast(d.msg);
+    toast('已保存'); loadRiders();
+  });
+}
+async function delRider(rid) {
+  if (!confirm('停用后不再出现在派单列表，历史结算保留。确定？')) return;
+  const d = await call('bizRiderDel', { rid });
+  if (!d.ok) return toast(d.msg);
+  toast('已停用'); loadRiders();
+}
+
+/* ---------------- 成本 ---------------- */
+const COST_TYPES = ['推广奖励', '退款及售后损失', '宣传费用', '其他运营费用'];
+async function loadCosts() {
+  const from = $('dFrom').value, to = $('dTo').value;
+  const d = await call('bizCosts', { from, to, type: $('cType') ? $('cType').value : '' });
+  const list = d.list || [];
+  const rows = list.map((x) =>
+    '<tr><td>' + x.date + '</td><td><span class="tag t-doing">' + esc(x.type) + '</span></td>' +
+    '<td>' + money(x.amount) + '</td><td>' + esc(x.note || '-') + '</td>' +
+    '<td><button class="btn sm danger" onclick="delCost(\'' + x.cid + '\')">删除</button></td></tr>').join('');
+
+  $('p3').innerHTML =
+    '<div class="card"><h3>新增成本</h3><div class="row">' +
+      '<div><label>日期</label><input id="cDate" type="date" value="' + ($('dTo').value || today()) + '"></div>' +
+      '<div><label>类型</label><select id="cTypeSel">' + COST_TYPES.map((t) => '<option>' + t + '</option>').join('') + '</select></div>' +
+      '<div><label>金额（元）</label><input id="cAmt" type="number" step="0.01" placeholder="0.00"></div>' +
+      '<div style="flex:2"><label>备注</label><input id="cNote" placeholder="用途说明"></div>' +
+      '<div style="flex:0 0 auto"><button class="btn" onclick="addCost()">记录</button></div>' +
+    '</div></div>' +
+    '<div class="card"><h3>成本记录（合计 ' + money(d.sum) + '）</h3>' +
+    (list.length ? '<table><thead><tr><th>日期</th><th>类型</th><th>金额</th><th>备注</th><th></th></tr></thead><tbody>' +
+      rows + '</tbody></table>' : '<div class="empty">该区间没有成本记录</div>') + '</div>';
+}
+async function addCost() {
+  const amount = Number($('cAmt').value);
+  if (!(amount > 0)) return toast('金额需大于 0');
+  const d = await call('bizCostAdd', {
+    date: $('cDate').value, type: $('cTypeSel').value,
+    amount, note: $('cNote').value.trim()
+  });
+  if (!d.ok) return toast(d.msg);
+  toast('已记录'); loadCosts(); loadAll();
+}
+async function delCost(cid) {
+  if (!confirm('删除这条成本记录？')) return;
+  const d = await call('bizCostDel', { cid });
+  if (!d.ok) return toast(d.msg);
+  toast('已删除'); loadCosts(); loadAll();
+}
+
+/* ---------------- 结算 ---------------- */
+async function loadSettles() {
+  const d = await call('bizSettleList');
+  const list = d.list || [];
+  const stName = ['待结算', '已发放', '已作废'];
+  const stCls = ['t-wait', 't-ok', 't-off'];
+  const rows = list.map((x) =>
+    '<tr><td>' + esc(x.name) + '</td><td>' + x.from + '</td>' +
+    '<td>' + x.normalQty + ' / ' + x.bigQty + '</td>' +
+    '<td>' + money(x.total) + '</td>' +
+    '<td><span class="tag ' + stCls[x.status] + '">' + stName[x.status] + '</span></td>' +
+    '<td>' +
+      (x.status === 0 ? '<button class="btn sm" onclick="settleStatus(\'' + x.sk + '\',1)">标记已发放</button> ' : '') +
+      (x.status === 1 ? '<button class="btn sm danger" onclick="settleStatus(\'' + x.sk + '\',2)">作废</button> ' : '') +
+      (x.status === 2 ? '<button class="btn sm sec" onclick="settleStatus(\'' + x.sk + '\',0)">恢复</button> ' : '') +
+    '</td></tr>').join('');
+
+  const opts = RIDERS.filter((r) => r.on).map((r) => '<option value="' + r.rid + '">' + esc(r.name) + '</option>').join('');
+
+  $('p4').innerHTML =
+    '<div class="card"><h3>生成结算（按日）</h3><div class="row">' +
+      '<div><label>配送员</label><select id="sRid">' + (opts || '<option value="">无在职配送员</option>') + '</select></div>' +
+      '<div><label>日期</label><input id="sDate" type="date" value="' + ($('dTo').value || today()) + '"></div>' +
+      '<div style="flex:0 0 auto"><button class="btn sec" onclick="previewSettle()">预览</button></div>' +
+      '<div style="flex:0 0 auto"><button class="btn" onclick="createSettle()">生成结算单</button></div>' +
+    '</div><div class="hint" id="sPrev"></div></div>' +
+    '<div class="card"><h3>结算记录（' + list.length + '）</h3>' +
+    (list.length ? '<table><thead><tr><th>配送员</th><th>日期</th><th>普通/大件</th><th>金额</th><th>状态</th><th>操作</th></tr></thead><tbody>' +
+      rows + '</tbody></table>' : '<div class="empty">还没有结算记录</div>') +
+    '<div class="hint">同一配送员同一天只能结算一次，已生成的不能重复生成（作废后可重新生成）。</div></div>';
+}
+async function previewSettle() {
+  const rid = $('sRid').value, date = $('sDate').value;
+  if (!rid) return toast('请选择配送员');
+  const d = await call('bizSettlePreview', { rid, date });
+  if (!d.ok) return toast(d.msg);
+  $('sPrev').innerHTML = '普通 ' + d.normalQty + ' 件 × ' + d.payNormal + ' + 大件 ' + d.bigQty +
+    ' 件 × ' + d.payBig + ' = <b>' + money(d.total) + '</b>' +
+    (d.exists ? '　<span style="color:var(--err)">⚠ 该日已结算，不能重复</span>' : '');
+}
+async function createSettle() {
+  const rid = $('sRid').value, date = $('sDate').value;
+  if (!rid) return toast('请选择配送员');
+  if (!confirm('确认生成 ' + date + ' 的结算单？')) return;
+  const d = await call('bizSettleCreate', { rid, date });
+  if (!d.ok) return toast(d.msg);
+  toast('已生成 ' + money(d.settlement.total)); loadSettles(); loadAll();
+}
+async function settleStatus(sk, st) {
+  const d = await call('bizSettleStatus', { sk, status: st });
+  if (!d.ok) return toast(d.msg);
+  toast('已更新'); loadSettles(); loadAll();
+}
+
+/* ---------------- 订单指派 ---------------- */
+async function loadOrders(date) {
+  const d = await call('bizOrders', { date });
+  const list = d.list || [];
+  const opts = RIDERS.filter((r) => r.on).map((r) => '<option value="' + r.rid + '">' + esc(r.name) + '</option>').join('');
+  const rows = list.map((o) =>
+    '<tr><td class="mono">' + o.no + '</td><td>' + esc(o.name) + '</td><td>' + esc(o.addr) + '</td>' +
+    '<td><span class="tag t-off">' + esc(o.area) + '</span></td>' +
+    '<td>' + o.totalQty + ' 件</td><td>' + money(o.total) + '</td>' +
+    '<td><span class="tag ' + (o.status === 4 ? 't-ok' : 't-wait') + '">' + o.statusText + '</span></td>' +
+    '<td>' + (o.rider ? esc(o.rider) : '<span style="color:var(--txt3)">未指派</span>') + '</td>' +
+    '<td><select onchange="assign(\'' + o.no + '\',this.value)">' +
+      '<option value="">— 指派 —</option>' + opts + '</select></td></tr>').join('');
+
+  $('p5').innerHTML =
+    '<div class="card"><h3>订单指派 · ' + date + '</h3>' +
+    '<div class="row" style="margin-bottom:14px"><div style="flex:0 0 auto"><input id="oDate" type="date" value="' + date + '">' +
+    '</div><div style="flex:0 0 auto"><button class="btn sec" onclick="loadOrders($(\'oDate\').value)">查询</button></div></div>' +
+    (list.length ? '<table><thead><tr><th>订单号</th><th>收件人</th><th>地址</th><th>区域</th><th>件数</th><th>金额</th><th>状态</th><th>配送员</th><th>操作</th></tr></thead><tbody>' +
+      rows + '</tbody></table>' : '<div class="empty">该日期没有订单</div>') + '</div>';
+}
+async function assign(no, rid) {
+  const d = await call('bizAssign', { no, rid });
+  if (!d.ok) return toast(d.msg);
+  toast(rid ? '已指派给 ' + d.rider : '已取消指派');
+  loadOrders($('dTo').value || today());
+  loadAll();
+}
+
+/* ---------------- 参数 ---------------- */
+async function loadCfg() {
+  const d = await call('bizConfig');
+  CFG = d.config;
+  renderCfg();
+}
+function renderCfg() {
+  const c = CFG;
+  $('p6').innerHTML =
+    '<div class="card"><h3>结算参数（修改后立即生效，历史结算不追溯）</h3>' +
+    '<div class="row">' +
+      '<div><label>普通件报酬（元/件）</label><input id="cfgNormal" type="number" step="0.01" value="' + c.payNormal + '"></div>' +
+      '<div><label>大件报酬（元/件）</label><input id="cfgBig" type="number" step="0.01" value="' + c.payBig + '"></div>' +
+      '<div><label>支付手续费率（如 0.006）</label><input id="cfgFee" type="number" step="0.001" value="' + c.feeRate + '"></div>' +
+      '<div><label>每月固定费用（元）</label><input id="cfgFixed" type="number" step="1" value="' + c.fixedMonthly + '"></div>' +
+    '</div>' +
+    '<div class="row" style="margin-top:14px">' +
+      '<div><label>收入口径</label><select id="cfgMode">' +
+        '<option value="confirmed"' + (c.revenueMode === 'confirmed' ? ' selected' : '') + '>已确认收款才计入（推荐）</option>' +
+        '<option value="delivered"' + (c.revenueMode === 'delivered' ? ' selected' : '') + '>送达即计入</option>' +
+      '</select></div>' +
+      '<div style="flex:0 0 auto"><button class="btn" onclick="saveCfg()">保存参数</button></div>' +
+    '</div>' +
+    '<div class="hint">上次更新：' + (c.updated ? new Date(c.updated).toLocaleString('zh-CN') : '未修改过') + '</div>' +
+    '</div>' +
+    '<div class="card"><h3>宿舍区域规则</h3><table><tbody>' +
+      '<tr><td>东区</td><td>D20 – D31</td></tr><tr><td>西区</td><td>D32 – D41</td></tr>' +
+    '</tbody></table><div class="hint">区域由订单地址中的楼栋号自动识别，下单页已改为楼栋选择。</div></div>';
+}
+async function saveCfg() {
+  const d = await call('bizConfig', {
+    save: 1,
+    payNormal: $('cfgNormal').value,
+    payBig: $('cfgBig').value,
+    feeRate: $('cfgFee').value,
+    fixedMonthly: $('cfgFixed').value,
+    revenueMode: $('cfgMode').value
+  });
+  if (!d.ok) return toast(d.msg);
+  CFG = d.config; toast('参数已保存'); loadAll();
+}
+
+/* ---------------- 启动 ---------------- */
+(function boot() {
+  const d = new Date(Date.now() + 8 * 3600e3);
+  const p = (n) => String(n).padStart(2, '0');
+  const t = d.getUTCFullYear() + '-' + p(d.getUTCMonth() + 1) + '-' + p(d.getUTCDate());
+  $('dFrom').value = t; $('dTo').value = t;
+
+  const k = new URLSearchParams(location.search).get('key');
+  if (k) { $('keyInput').value = k; KEY = k; }
+
+  if (KEY) {
+    call('bizStats', { from: t, to: t }).then((r) => {
+      if (r.ok) { $('gate').classList.add('hide'); $('main').classList.remove('hide'); setRange('month'); }
+    }).catch(() => {});
+  }
+  $('keyInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+})();
+</script>
+</body>
+</html>
