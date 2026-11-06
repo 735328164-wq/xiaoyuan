@@ -112,6 +112,7 @@ padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;poi
     <button id="t4" onclick="tab(4)">结算</button>
     <button id="t5" onclick="tab(5)">订单指派</button>
     <button id="t6" onclick="tab(6)">参数</button>
+    <button id="t7" onclick="tab(7)">异常订单</button>
   </div>
 
   <div id="p1"></div>
@@ -120,6 +121,7 @@ padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;poi
   <div id="p4" class="hide"></div>
   <div id="p5" class="hide"></div>
   <div id="p6" class="hide"></div>
+  <div id="p7" class="hide"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -183,15 +185,17 @@ function setRange(mode) {
 
 function tab(n) {
   CUR_TAB = n;
-  for (let i = 1; i <= 6; i++) {
-    $('t' + i).classList.toggle('on', i === n);
-    $('p' + i).classList.toggle('hide', i !== n);
+  for (let i = 1; i <= 7; i++) {
+    const el = $('t' + i), pe = $('p' + i);
+    if (el) el.classList.toggle('on', i === n);
+    if (pe) pe.classList.toggle('hide', i !== n);
   }
   if (n === 2) loadRiders();
   if (n === 3) loadCosts();
   if (n === 4) loadSettles();
   if (n === 5) loadOrders($('dTo').value || today());
   if (n === 6) loadCfg();
+  if (n === 7) loadIssues();
 }
 
 async function loadAll() {
@@ -296,8 +300,11 @@ function renderRiders() {
   const rows = RIDERS.map((x) =>
     '<tr><td>' + esc(x.name) + '</td><td>' + esc(x.phone || '-') + '</td>' +
     '<td>' + (x.on ? '<span class="tag t-ok">在职</span>' : '<span class="tag t-off">停用</span>') + '</td>' +
-    '<td class="mono">' + x.rid + '</td>' +
-    '<td><button class="btn sm sec" onclick="editRider(\'' + x.rid + '\')">编辑</button> ' +
+    '<td>' + (x.uid
+      ? '<span class="mono">' + esc(x.uid.slice(0, 10)) + '…</span>'
+      : '<span style="color:var(--err)">未绑定</span>') + '</td>' +
+    '<td><button class="btn sm sec" onclick="bindRider(\'' + x.rid + '\')">绑定微信</button> ' +
+    '<button class="btn sm sec" onclick="editRider(\'' + x.rid + '\')">编辑</button> ' +
     (x.on ? '<button class="btn sm danger" onclick="delRider(\'' + x.rid + '\')">停用</button>' : '') +
     '</td></tr>').join('');
 
@@ -305,17 +312,54 @@ function renderRiders() {
     '<div class="card"><h3>新增配送员</h3><div class="row">' +
       '<div><label>姓名</label><input id="rName" placeholder="张三"></div>' +
       '<div><label>手机号</label><input id="rPhone" placeholder="选填"></div>' +
-      '<div><label>备注</label><input id="rNote" placeholder="选填"></div>' +
+      '<div><label>微信用户 ID（选填）</label><input id="rUid" placeholder="用户的 uid，可从「我的」页复制"></div>' +
       '<div style="flex:0 0 auto"><button class="btn" onclick="saveRider()">添加</button></div>' +
-    '</div></div>' +
+    '</div><div class="hint">绑定微信 ID 后，该用户打开小程序「我的」就能看到配送员工作台。</div></div>' +
     '<div class="card"><h3>配送员列表（' + RIDERS.length + '）</h3>' +
-    (RIDERS.length ? '<table><thead><tr><th>姓名</th><th>电话</th><th>状态</th><th>ID</th><th>操作</th></tr></thead><tbody>' +
+    (RIDERS.length ? '<table><thead><tr><th>姓名</th><th>电话</th><th>状态</th><th>微信绑定</th><th>操作</th></tr></thead><tbody>' +
       rows + '</tbody></table>' : '<div class="empty">还没有配送员</div>') + '</div>';
+}
+
+async function bindRider(rid) {
+  const x = RIDERS.filter((r) => r.rid === rid)[0];
+  const uid = prompt('输入该配送员的微信用户 ID（在小程序「我的」页面点击 ID 可复制）', x.uid || '');
+  if (uid === null) return;
+  const d = await call('bizRiderSave', { rid, name: x.name, phone: x.phone || '', note: x.note || '', uid: uid.trim() });
+  if (!d.ok) return toast(d.msg);
+  toast(uid.trim() ? '已绑定' : '已解绑');
+  loadRiders();
+}
+
+/* ---------------- 异常订单 ---------------- */
+async function loadIssues() {
+  const d = await call('bizIssues');
+  const list = d.list || [];
+  const rows = list.map((x) =>
+    '<tr><td class="mono">' + x.no + '</td><td>' + esc(x.name) + '</td><td>' + esc(x.addr) + '</td>' +
+    '<td><span class="tag t-wait">' + esc(x.statusText) + '</span></td>' +
+    '<td style="color:var(--err)">' + esc(x.note) + '</td>' +
+    '<td>' + esc(x.by || '-') + '<br><span style="font-size:11px;color:var(--txt3)">' + x.atText + '</span></td>' +
+    '<td><button class="btn sm" onclick="issueDone(\'' + x.no + '\')">已处理</button></td></tr>').join('');
+
+  $('p7').innerHTML =
+    '<div class="card"><h3>待处理异常（' + list.length + '）</h3>' +
+    (list.length ? '<table><thead><tr><th>订单号</th><th>收件人</th><th>地址</th><th>订单状态</th><th>异常说明</th><th>上报</th><th>操作</th></tr></thead><tbody>' +
+      rows + '</tbody></table>' : '<div class="empty">没有待处理的异常订单</div>') +
+    '<div class="hint">配送员在小程序内上报的异常会出现在这里，处理完点「已处理」即可。</div></div>';
+}
+async function issueDone(no) {
+  const d = await call('bizIssueDone', { no });
+  if (!d.ok) return toast(d.msg);
+  toast('已标记处理'); loadIssues();
 }
 async function saveRider() {
   const name = $('rName').value.trim();
   if (!name) return toast('请填姓名');
-  const d = await call('bizRiderSave', { name, phone: $('rPhone').value.trim(), note: $('rNote').value.trim() });
+  const d = await call('bizRiderSave', {
+    name,
+    phone: $('rPhone').value.trim(),
+    uid: ($('rUid') ? $('rUid').value.trim() : '')
+  });
   if (!d.ok) return toast(d.msg);
   toast('已添加'); loadRiders();
 }
