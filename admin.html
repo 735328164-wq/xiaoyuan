@@ -39,7 +39,7 @@ font-weight:600;cursor:pointer}
 .stat .v{font-size:26px;font-weight:700;line-height:1.1}
 .stat .u{font-size:12px;color:var(--txt3);font-weight:400;margin-left:4px}
 .v-brand{color:var(--brand)} .v-ok{color:var(--ok)} .v-err{color:var(--err)} .v-warn{color:var(--warn)}
-.tabs{display:flex;gap:6px;margin-bottom:16px;background:#fff;border-radius:12px;padding:5px;width:fit-content}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;background:#fff;border-radius:12px;padding:5px;width:fit-content}
 .tabs button{border:none;background:transparent;color:var(--txt2);padding:8px 18px;border-radius:9px;cursor:pointer}
 .tabs button.on{background:var(--brand-soft);color:var(--brand-press);font-weight:600}
 .card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px}
@@ -67,7 +67,7 @@ tr:last-child td{border-bottom:none}
 .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#302F2B;color:#fff;
 padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:99}
 .toast.show{opacity:1}
-@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.tabs{width:auto}.wrap{padding:16px 14px 40px}}
 </style>
 </head>
 <body>
@@ -114,6 +114,7 @@ padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;poi
     <button id="t6" onclick="tab(6)">参数</button>
     <button id="t7" onclick="tab(7)">异常订单</button>
     <button id="t8" onclick="tab(8)">招募审核</button>
+    <button id="t9" onclick="tab(9)">调价</button>
   </div>
 
   <div id="p1"></div>
@@ -124,6 +125,7 @@ padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;poi
   <div id="p6" class="hide"></div>
   <div id="p7" class="hide"></div>
   <div id="p8" class="hide"></div>
+  <div id="p9" class="hide"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -187,7 +189,7 @@ function setRange(mode) {
 
 function tab(n) {
   CUR_TAB = n;
-  for (let i = 1; i <= 8; i++) {
+  for (let i = 1; i <= 9; i++) {
     const el = $('t' + i), pe = $('p' + i);
     if (el) el.classList.toggle('on', i === n);
     if (pe) pe.classList.toggle('hide', i !== n);
@@ -199,6 +201,7 @@ function tab(n) {
   if (n === 6) loadCfg();
   if (n === 7) loadIssues();
   if (n === 8) loadJoin();
+  if (n === 9) loadPrice();
 }
 
 async function loadAll() {
@@ -598,6 +601,95 @@ async function assign(no, rid) {
   loadAll();
 }
 
+/* ---------------- 调价（对外单价）---------------- */
+let PRICE = null;
+
+async function loadPrice() {
+  $('p9').innerHTML = '<div class="card"><h3>载入中…</h3></div>';
+  let d;
+  try { d = await call('xprice'); } catch (e) { d = { ok: false, msg: e.message }; }
+  if (!d.ok) {
+    $('p9').innerHTML =
+      '<div class="card"><h3>对外单价</h3>' +
+      '<div class="warn-box">读不到价格配置：' + esc(d.msg || '接口未更新') + '</div>' +
+      '<div class="hint">如果是刚做的改动，需要先重新部署 SCF 后端（cherry-scf/build_web.py），再刷新本页。</div>' +
+      '</div>';
+    return;
+  }
+  PRICE = d.price;
+  renderPrice();
+}
+
+function renderPrice() {
+  const p = PRICE || {};
+  const when = p.updatedAt ? new Date(p.updatedAt).toLocaleString('zh-CN') : '默认值（还没改过）';
+  $('p9').innerHTML =
+    '<div class="card"><h3>当前对外单价</h3>' +
+      '<table><tbody>' +
+        '<tr><td>普通件</td><td class="money-cell"><b>' + money(p.normal) + '</b> / 件</td></tr>' +
+        '<tr><td>大件</td><td class="money-cell"><b>' + money(p.big) + '</b> / 件</td></tr>' +
+      '</tbody></table>' +
+      '<div class="hint">上次修改：' + when + (p.by ? '（' + esc(p.by) + '）' : '') + '</div>' +
+    '</div>' +
+    '<div class="card"><h3>改价</h3>' +
+      '<div class="warn-box">只影响新订单。已下单的订单在下单那一刻就把单价存进了订单里，这里调价不会改动它们的金额。</div>' +
+      '<div class="row">' +
+        '<div><label>普通件单价（元/件）</label>' +
+          '<input id="pNormal" type="number" step="0.1" min="0.1" max="99" value="' + p.normal + '" oninput="previewPrice()"></div>' +
+        '<div><label>大件单价（元/件）</label>' +
+          '<input id="pBig" type="number" step="0.1" min="0.1" max="99" value="' + p.big + '" oninput="previewPrice()"></div>' +
+      '</div>' +
+      '<div class="preset-row"><span class="preset-lb">常用</span>' +
+        '<button class="btn sec" onclick="applyPreset(1,2)">1 / 2</button>' +
+        '<button class="btn sec" onclick="applyPreset(1.5,3)">1.5 / 3</button>' +
+        '<button class="btn sec" onclick="applyPreset(2,4)">2 / 4</button>' +
+        '<button class="btn sec" onclick="applyPreset(2.5,5)">2.5 / 5</button>' +
+      '</div>' +
+      '<div class="preview-box" id="pPreview"></div>' +
+      '<div class="row" style="margin-top:14px">' +
+        '<div style="flex:0 0 auto"><button class="btn" onclick="savePrice()">保存单价</button></div>' +
+      '</div>' +
+    '</div>';
+  previewPrice();
+}
+
+function previewPrice() {
+  const n = Number(($('pNormal') || {}).value);
+  const b = Number(($('pBig') || {}).value);
+  const el = $('pPreview');
+  if (!el) return;
+  if (!(n >= 0.1 && n <= 99) || !(b >= 0.1 && b <= 99)) {
+    el.className = 'preview-box bad';
+    el.innerHTML = '单价需在 0.1 ~ 99 元之间';
+    return;
+  }
+  const one = n + b;
+  const ten = Math.round(n * 10 * 100) / 100;
+  el.className = 'preview-box';
+  el.innerHTML =
+    '1 普通 + 1 大件 = <b>' + money(one) + '</b>' +
+    '<span class="pv-sep">·</span>' +
+    '10 个普通件 = <b>' + money(ten) + '</b>';
+}
+
+function applyPreset(n, b) {
+  $('pNormal').value = n;
+  $('pBig').value = b;
+  previewPrice();
+}
+
+async function savePrice() {
+  const n = Number($('pNormal').value);
+  const b = Number($('pBig').value);
+  if (!(n >= 0.1 && n <= 99) || !(b >= 0.1 && b <= 99)) {
+    return toast('单价需在 0.1 ~ 99 元之间');
+  }
+  const d = await call('xprice', { save: 1, normal: n, big: b, who: 'admin' });
+  if (!d.ok) return toast(d.msg || '保存失败');
+  PRICE = d.price;
+  toast('单价已保存，立即对新订单生效');
+  renderPrice();
+}
 /* ---------------- 参数 ---------------- */
 async function loadCfg() {
   const d = await call('bizConfig');
